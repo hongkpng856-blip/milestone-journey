@@ -208,14 +208,21 @@
   }
 
   /* Arrow between tiles */
+  .connector {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: -2px 0;
+    z-index: 2;
+    width: 100%;
+  }
   .arrow-down {
     width: 0;
     height: 0;
     border-left: 12px solid transparent;
     border-right: 12px solid transparent;
     border-top: 20px solid #bdc3c7;
-    margin: -2px 0;
-    z-index: 2;
     transition: border-top-color 0.5s;
   }
   .arrow-down.active {
@@ -229,6 +236,42 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-5px); }
   }
+  /* + button between tiles */
+  .plus-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: white;
+    border: 2px dashed #bdc3c7;
+    color: #7f8c8d;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -8px;
+    transition: all 0.3s;
+    position: relative;
+    z-index: 5;
+  }
+  .plus-btn:hover {
+    border-color: #3498db;
+    color: #3498db;
+    background: #ebf5fb;
+  }
+  .plus-btn.added {
+    border-style: solid;
+    border-color: #2ecc71;
+    background: #eafaf1;
+    color: #2ecc71;
+  }
+  /* Custom tile (inserted by user) */
+  .tile.custom {
+    background: linear-gradient(135deg, #f4ecf7, #e8daef);
+    border-color: #9b59b6;
+  }
+  .tile.custom .tile-inner { color: #8e44ad; }
 
   /* Achievement popup */
   .achievement-overlay {
@@ -506,6 +549,8 @@
   let currentTile = 0;
   let completed = [];
   let userName = '';
+  let customTiles = []; // { insertAfter: index, name: '...', icon: '...', desc: '...' }
+  let customArrows = new Set(); // track which arrows have custom tiles
 
   // ===== RENDER (unchanged) =====
   function render() {
@@ -531,8 +576,32 @@
         let arrowCls = 'arrow-down';
         if (prevCompleted) arrowCls += ' active';
         if (isCurrentArrow && currentTile > 0) arrowCls += ' current-arrow';
-        arrowHtml = `<div class="${arrowCls}"></div>`;
+        arrowHtml = `<div class="connector">
+          <div class="${arrowCls}"></div>
+          <div class="plus-btn ${customArrows.has(i) ? 'added' : ''}" onclick="event.stopPropagation();openAddCustom(${i})">${customArrows.has(i) ? '✓' : '+'}</div>
+        </div>`;
       }
+
+      // Insert custom tiles before this tile (from previous arrow)
+      const customBefore = customTiles.filter(c => c.insertAfter === i - 1);
+      customBefore.forEach((ct, ci) => {
+        html += `
+          <div class="tile-wrap">
+            <div class="connector" style="opacity:0.5">
+              <div class="arrow-down active"></div>
+              <div class="plus-btn added">✓</div>
+            </div>
+            <div class="tile custom current" onclick="clickCustomTile('${ct.uid}')">
+              <div class="tile-inner">
+                <div class="tile-icon">${ct.icon}</div>
+                <div class="tile-number">✏️ 自訂</div>
+                <div class="tile-name">${ct.name}</div>
+                ${ct.desc ? `<div style="font-size:9px;opacity:0.7;margin-top:4px">${ct.desc}</div>` : ''}
+                <div style="font-size:16px;margin-top:4px">📍</div>
+              </div>
+            </div>
+          </div>`;
+      });
 
       let innerContent = '';
       if (isStart && currentTile === 0) {
@@ -658,9 +727,36 @@
 
   function closeAchievement() {
     document.getElementById('achPopup').classList.remove('show');
-    if (completed.length === tiles.length) {
+    if (completed.length === tiles.length + customTiles.filter(c => c.completed).length) {
       setTimeout(() => { alert('🎉🎉🎉 恭喜你完成整趟創業旅程！由 0 去到 1 啦！🎉🎉🎉'); }, 300);
     }
+  }
+
+  // ===== CUSTOM TILE + BUTTONS =====
+  function openAddCustom(afterIndex) {
+    const name = prompt('✏️ 新里程碑名：', '');
+    if (!name) return;
+    const desc = prompt('📝 簡單描述：', '') || '';
+    const icons = ['🌟', '⭐', '💫', '✨', '🎯', '📌', '💎', '🔥', '💪', '🎪'];
+    const icon = icons[Math.floor(Math.random() * icons.length)];
+    const uid = 'custom_' + Date.now();
+    customTiles.push({ uid, insertAfter: afterIndex, name, desc, icon, completed: false });
+    customArrows.add(afterIndex);
+    render();
+  }
+
+  function clickCustomTile(uid) {
+    const ct = customTiles.find(c => c.uid === uid);
+    if (!ct || ct.completed) return;
+    ct.completed = true;
+    const now = new Date();
+    const timeStr = now.toLocaleString('zh-Hant', { timeZone: 'Asia/Hong_Kong' });
+    document.getElementById('achIcon').textContent = '🌟';
+    document.getElementById('achTitle').textContent = `「${ct.name}」完成！`;
+    document.getElementById('achDesc').textContent = `自訂里程碑完成！`;
+    document.getElementById('achTime').textContent = `⏱️ ${timeStr}`;
+    document.getElementById('achPopup').classList.add('show');
+    render();
   }
 
   // ===== ZOOM (added on top, no design changes) =====
