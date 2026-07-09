@@ -17,11 +17,11 @@
     opacity: 0; pointer-events: none;
   }
   .tile-wrap:hover .side-plus { opacity: 1; pointer-events: auto; }
-  .tile-wrap .side-plus.always-show { opacity: 1; pointer-events: auto; border-color: #2ecc71; color: #2ecc71; background: #eafaf1; }
+  .tile-wrap .side-plus.always-show { opacity: 1; pointer-events: auto; }
   .side-plus:hover { border-color: #3498db; color: #3498db; background: #ebf5fb; }
   /* Touch devices: always show corner buttons */
   @media (hover: none) {
-    .side-plus { opacity: 0.4; pointer-events: auto; }
+    .side-plus { opacity: 0.35; pointer-events: auto; }
     .tile-wrap .side-plus.always-show { opacity: 1; }
   }
   body {
