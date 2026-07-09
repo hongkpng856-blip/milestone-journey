@@ -361,8 +361,7 @@ function render() {
 
   allItems.forEach((item, idx) => {
     if (item.type === 'plus') {
-      const alreadyAdded = customSteps.some(c => c.afterPreset === (item.after !== undefined ? item.after : (curStep - 1)));
-      html += `<div class="connector"><div class="plus-btn ${alreadyAdded ? 'completed' : ''}" onclick="openAddModal()">+</div></div>`;
+      // Plus connector removed by design - four corners only
     } else if (item.type === 'preset') {
       const i = item.index;
       const isCur = i === curStep;
