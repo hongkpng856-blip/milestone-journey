@@ -14,16 +14,9 @@
     align-items: center; justify-content: center;
     font-size: 18px; color: #999; cursor: pointer;
     transition: all 0.2s;
-    opacity: 0; pointer-events: none;
   }
-  .tile-wrap:hover .side-plus { opacity: 1; pointer-events: auto; }
-  .tile-wrap .side-plus.always-show { opacity: 1; pointer-events: auto; border-color: #2ecc71; color: #2ecc71; background: #eafaf1; }
+  .tile-wrap .side-plus { border-color: #2ecc71; color: #2ecc71; background: #eafaf1; }
   .side-plus:hover { border-color: #3498db; color: #3498db; background: #ebf5fb; }
-  /* Touch devices: always show corner buttons */
-  @media (hover: none) {
-    .side-plus { opacity: 0.4; pointer-events: auto; }
-    .tile-wrap .side-plus.always-show { opacity: 1; }
-  }
   body {
     background: #f5f0e8;
     font-family: 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
@@ -387,10 +380,10 @@ function render() {
       const hasR = customSteps.some(c => c.side === 'right' && c.afterStep === i);
       const hasT = customSteps.some(c => c.side === 'top' && c.afterStep === i);
       const hasB = customSteps.some(c => c.side === 'bottom' && c.afterStep === i);
-      inner += `<div class="side-plus ${hasL?'always-show':''}" style="left:-14px;top:-14px;" onclick="event.stopPropagation();openAddModal(${i},'left')">${hasL?'↖':'+'}</div>`;
-      inner += `<div class="side-plus ${hasT?'always-show':''}" style="left:calc(100% - 14px);top:-14px;" onclick="event.stopPropagation();openAddModal(${i},'top')">${hasT?'↗':'+'}</div>`;
-      inner += `<div class="side-plus ${hasR?'always-show':''}" style="left:calc(100% - 14px);top:calc(100% - 14px);" onclick="event.stopPropagation();openAddModal(${i},'right')">${hasR?'↘':'+'}</div>`;
-      inner += `<div class="side-plus ${hasB?'always-show':''}" style="left:-14px;top:calc(100% - 14px);" onclick="event.stopPropagation();openAddModal(${i},'bottom')">${hasB?'↙':'+'}</div>`;
+      if (hasL) inner += `<div class="side-plus always-show" style="left:-14px;top:-14px;" onclick="event.stopPropagation();openAddModal(${i},'left')">↖</div>`;
+      if (hasT) inner += `<div class="side-plus always-show" style="left:calc(100% - 14px);top:-14px;" onclick="event.stopPropagation();openAddModal(${i},'top')">↗</div>`;
+      if (hasR) inner += `<div class="side-plus always-show" style="left:calc(100% - 14px);top:calc(100% - 14px);" onclick="event.stopPropagation();openAddModal(${i},'right')">↘</div>`;
+      if (hasB) inner += `<div class="side-plus always-show" style="left:-14px;top:calc(100% - 14px);" onclick="event.stopPropagation();openAddModal(${i},'bottom')">↙</div>`;
 
       // Character on current preset
       if (isCur && curStep > 0) {
@@ -440,10 +433,10 @@ function render() {
       const cHasT = customSteps.some(x => x.side === 'top' && x.afterStep === pi && customSteps.indexOf(x) > customSteps.indexOf(c) && x.afterPreset === pi);
       const cHasR = customSteps.some(x => x.side === 'right' && x.afterStep === pi && customSteps.indexOf(x) > customSteps.indexOf(c) && x.afterPreset === pi);
       const cHasB = customSteps.some(x => x.side === 'bottom' && x.afterStep === pi && customSteps.indexOf(x) > customSteps.indexOf(c) && x.afterPreset === pi);
-      inner += `<div class="side-plus ${cHasL?'always-show':''}" style="left:-14px;top:-14px;" onclick="event.stopPropagation();openAddModal(${pi},'left')">${cHasL?'↖':'+'}</div>`;
-      inner += `<div class="side-plus ${cHasT?'always-show':''}" style="left:calc(100% - 14px);top:-14px;" onclick="event.stopPropagation();openAddModal(${pi},'top')">${cHasT?'↗':'+'}</div>`;
-      inner += `<div class="side-plus ${cHasR?'always-show':''}" style="left:calc(100% - 14px);top:calc(100% - 14px);" onclick="event.stopPropagation();openAddModal(${pi},'right')">${cHasR?'↘':'+'}</div>`;
-      inner += `<div class="side-plus ${cHasB?'always-show':''}" style="left:-14px;top:calc(100% - 14px);" onclick="event.stopPropagation();openAddModal(${pi},'bottom')">${cHasB?'↙':'+'}</div>`;
+      if (cHasL) inner += `<div class="side-plus always-show" style="left:-14px;top:-14px;" onclick="event.stopPropagation();openAddModal(${pi},'left')">↖</div>`;
+      if (cHasT) inner += `<div class="side-plus always-show" style="left:calc(100% - 14px);top:-14px;" onclick="event.stopPropagation();openAddModal(${pi},'top')">↗</div>`;
+      if (cHasR) inner += `<div class="side-plus always-show" style="left:calc(100% - 14px);top:calc(100% - 14px);" onclick="event.stopPropagation();openAddModal(${pi},'right')">↘</div>`;
+      if (cHasB) inner += `<div class="side-plus always-show" style="left:-14px;top:calc(100% - 14px);" onclick="event.stopPropagation();openAddModal(${pi},'bottom')">↙</div>`;
 
       // Connector arrow from parent diamond
       const sideLabel = {left:'←',top:'↑',right:'→',bottom:'↓'}[c.side] || '▼';
