@@ -117,13 +117,13 @@
   .tile-number { font-size: 11px; font-weight: 700; opacity: 0.6; }
   .tile-name { font-size: 12px; font-weight: 600; margin-top: 2px; }
   .tile.tiny {
-    width: 100px;
-    height: 100px;
-    margin: -26px 0;
+    width: 180px;
+    height: 180px;
+    margin: -8px 0;
   }
-  .tile.tiny .tile-icon { font-size: 22px; }
-  .tile.tiny .tile-number { font-size: 9px; }
-  .tile.tiny .tile-name { font-size: 10px; }
+  .tile.tiny .tile-icon { font-size: 36px; }
+  .tile.tiny .tile-number { font-size: 11px; }
+  .tile.tiny .tile-name { font-size: 12px; }
 
   /* Character */
   .character-area {
@@ -378,8 +378,12 @@ function render() {
       // Side + buttons for this preset (placed at 4 diamond corners)
       const hasL = customSteps.some(c => c.side === 'left' && c.afterStep === i);
       const hasR = customSteps.some(c => c.side === 'right' && c.afterStep === i);
+      const hasT = customSteps.some(c => c.side === 'top' && c.afterStep === i);
+      const hasB = customSteps.some(c => c.side === 'bottom' && c.afterStep === i);
       inner += `<div class="side-plus" style="left:-36px;top:50%;margin-top:-14px; ${hasL ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'left')">${hasL ? '✓' : '+'}</div>`;
       inner += `<div class="side-plus" style="right:-36px;top:50%;margin-top:-14px; ${hasR ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'right')">${hasR ? '✓' : '+'}</div>`;
+      inner += `<div class="side-plus" style="left:50%;top:-36px;margin-left:-14px; ${hasT ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'top')">${hasT ? '✓' : '+'}</div>`;
+      inner += `<div class="side-plus" style="left:50%;bottom:-36px;margin-left:-14px; ${hasB ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'bottom')">${hasB ? '✓' : '+'}</div>`;
 
       // Character on current preset
       if (isCur && curStep > 0) {
@@ -390,29 +394,7 @@ function render() {
         </div></div>`;
       }
 
-      html += `<div class="tile-wrap"><div class="${cls}" onclick="${isStart ? `startJourney()` : isCur ? `completePreset(${i})` : ''}">${inner}</div>`;
-
-      // Left/right branch tiles for this preset — render INLINE (flow)
-      const sideBranches = customSteps.filter(c => c.afterStep === i && ['left','right'].includes(c.side));
-      if (sideBranches.length > 0) {
-        sideBranches.forEach((c, ci) => {
-          const isDone = c.completed;
-          const isActive = !isDone && curStep >= steps.length + customSteps.filter(x => x.completed).length;
-          branchCounts[c.side]++;
-          html += `<div class="connector"><div class="arrow-down ${isDone?'completed':''}"></div></div>
-            <div class="tile-wrap">
-              <div class="tile custom tiny ${isDone?'completed':''} ${isActive?'current':''}" onclick="${isActive?`completeCustom(${customSteps.indexOf(c)})`:''}">
-                <div class="tile-inner">
-                  <div class="tile-icon">${isDone?'✅':c.icon}</div>
-                  <div class="tile-name">${c.name}</div>
-                  ${c.desc ? `<div style="font-size:9px;opacity:0.7">${c.desc}</div>` : ''}
-                </div>
-              </div>
-            </div>`;
-        });
-      }
-
-      html += `</div>`;
+      html += `<div class="tile-wrap"><div class="${cls}" onclick="${isStart ? `startJourney()` : isCur ? `completePreset(${i})` : ''}">${inner}</div></div>`;
       if (isStart) totalCount++;
       else if (isCur) { totalCount++; totalCount++; } // current + future
       else totalCount++;
@@ -428,7 +410,7 @@ function render() {
       const thisIdx = steps.length + customSteps.indexOf(c);
       const isActive = !c.completed && (thisIdx === curAll || (curStep >= steps.length && !isDone && customSteps.indexOf(c) === doneCustoms));
 
-      let cls = 'tile custom tiny';
+      let cls = 'tile custom';
       if (isDone) cls += ' completed';
       else if (isActive) cls += ' current';
 
@@ -484,7 +466,7 @@ function submitAdd() {
   const desc = document.getElementById('addDesc').value.trim() || '';
   const icons = ['🌟','⭐','💫','✨','🎯','📌','💎','🔥','💪','🎪','📊','🎨','⚙️','📋','🔄'];
   const icon = icons[customSteps.length % icons.length];
-  customSteps.push({ icon, name, desc, completed: false, side: window._addSide || 'bottom', afterStep: window._addAfter || 0 });
+  customSteps.push({ icon, name, desc, completed: false, side: window._addSide || 'bottom', afterStep: window._addAfter || 0, afterPreset: window._addAfter ?? 0 });
   document.getElementById('addModal').classList.remove('show');
   render();
 }
