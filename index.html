@@ -19,6 +19,11 @@
   .tile-wrap:hover .side-plus { opacity: 1; pointer-events: auto; }
   .tile-wrap .side-plus.always-show { opacity: 1; pointer-events: auto; border-color: #2ecc71; color: #2ecc71; background: #eafaf1; }
   .side-plus:hover { border-color: #3498db; color: #3498db; background: #ebf5fb; }
+  /* Touch devices: always show corner buttons */
+  @media (hover: none) {
+    .side-plus { opacity: 0.4; pointer-events: auto; }
+    .tile-wrap .side-plus.always-show { opacity: 1; }
+  }
   body {
     background: #f5f0e8;
     font-family: 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
@@ -442,7 +447,7 @@ function render() {
 
       // Connector arrow from parent diamond
       const sideLabel = {left:'←',top:'↑',right:'→',bottom:'↓'}[c.side] || '▼';
-      html += `<div class="connector"><div class="arrow-down ${isDone?'completed':''} branch-connector" style="position:relative;"><span style="position:absolute;left:50%;top:-18px;transform:translateX(-50%);font-size:10px;color:#999;white-space:nowrap;">via ${sideLabel}</span></div></div>`;
+      html += `<div class="connector"><div class="arrow-down ${isDone?'completed':''} branch-connector" style="position:relative;"><span style="position:absolute;left:50%;top:-18px;transform:translateX(-50%);font-size:10px;color:#999;white-space:nowrap;">${sideLabel}</span></div></div>`;
       html += `<div class="tile-wrap"><div class="${cls}" onclick="${isActive ? `completeCustom(${customSteps.indexOf(c)})` : ''}">${inner}</div></div>`;
       if (isDone) { completedCustomCount++; totalCount++; }
     }
@@ -482,7 +487,10 @@ function submitAdd() {
   const desc = document.getElementById('addDesc').value.trim() || '';
   const icons = ['🌟','⭐','💫','✨','🎯','📌','💎','🔥','💪','🎪','📊','🎨','⚙️','📋','🔄'];
   const icon = icons[customSteps.length % icons.length];
-  customSteps.push({ icon, name, desc, completed: false, side: window._addSide || 'bottom', afterStep: window._addAfter || 0, afterPreset: window._addAfter ?? 0 });
+  // If no side specified (from between-tile +), default to 'bottom' and use last preset index
+  const addSide = window._addSide || 'bottom';
+  const addAfter = window._addAfter !== undefined ? window._addAfter : (steps.length - 1);
+  customSteps.push({ icon, name, desc, completed: false, side: addSide, afterStep: addAfter, afterPreset: addAfter });
   document.getElementById('addModal').classList.remove('show');
   render();
 }
