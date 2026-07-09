@@ -12,7 +12,7 @@
     background: white; border: 2px dashed #bbb;
     border-radius: 50%; display: flex;
     align-items: center; justify-content: center;
-    font-size: 16px; color: #999; cursor: pointer;
+    font-size: 18px; color: #999; cursor: pointer;
     transition: all 0.2s;
   }
   .side-plus:hover { border-color: #3498db; color: #3498db; background: #ebf5fb; }
@@ -380,10 +380,10 @@ function render() {
       const hasR = customSteps.some(c => c.side === 'right' && c.afterStep === i);
       const hasT = customSteps.some(c => c.side === 'top' && c.afterStep === i);
       const hasB = customSteps.some(c => c.side === 'bottom' && c.afterStep === i);
-      inner += `<div class="side-plus" style="left:-14px;top:-14px; ${hasL ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'left')">+</div>`;
-      inner += `<div class="side-plus" style="left:calc(100% - 14px);top:-14px; ${hasT ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'top')">+</div>`;
-      inner += `<div class="side-plus" style="left:calc(100% - 14px);top:calc(100% - 14px); ${hasR ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'right')">+</div>`;
-      inner += `<div class="side-plus" style="left:-14px;top:calc(100% - 14px); ${hasB ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'bottom')">+</div>`;
+      inner += `<div class="side-plus" style="left:-14px;top:-14px; ${hasL ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'left')">↖</div>`;
+      inner += `<div class="side-plus" style="left:calc(100% - 14px);top:-14px; ${hasT ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'top')">↗</div>`;
+      inner += `<div class="side-plus" style="left:calc(100% - 14px);top:calc(100% - 14px); ${hasR ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'right')">↘</div>`;
+      inner += `<div class="side-plus" style="left:-14px;top:calc(100% - 14px); ${hasB ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'bottom')">↙</div>`;
 
       // Character on current preset
       if (isCur && curStep > 0) {
@@ -427,6 +427,20 @@ function render() {
         </div></div>`;
       }
 
+      // Corner + buttons for custom tile too
+      const pi = c.afterStep !== undefined ? c.afterStep : 0;
+      const cHasL = customSteps.some(x => x.side === 'left' && x.afterStep === pi && customSteps.indexOf(x) > customSteps.indexOf(c) && x.afterPreset === pi);
+      const cHasT = customSteps.some(x => x.side === 'top' && x.afterStep === pi && customSteps.indexOf(x) > customSteps.indexOf(c) && x.afterPreset === pi);
+      const cHasR = customSteps.some(x => x.side === 'right' && x.afterStep === pi && customSteps.indexOf(x) > customSteps.indexOf(c) && x.afterPreset === pi);
+      const cHasB = customSteps.some(x => x.side === 'bottom' && x.afterStep === pi && customSteps.indexOf(x) > customSteps.indexOf(c) && x.afterPreset === pi);
+      inner += `<div class="side-plus" style="left:-14px;top:-14px; ${cHasL ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${pi},'left')">↖</div>`;
+      inner += `<div class="side-plus" style="left:calc(100% - 14px);top:-14px; ${cHasT ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${pi},'top')">↗</div>`;
+      inner += `<div class="side-plus" style="left:calc(100% - 14px);top:calc(100% - 14px); ${cHasR ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${pi},'right')">↘</div>`;
+      inner += `<div class="side-plus" style="left:-14px;top:calc(100% - 14px); ${cHasB ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${pi},'bottom')">↙</div>`;
+
+      // Connector arrow from parent diamond
+      const sideLabel = {left:'←',top:'↑',right:'→',bottom:'↓'}[c.side] || '▼';
+      html += `<div class="connector"><div class="arrow-down ${isDone?'completed':''} branch-connector" style="position:relative;"><span style="position:absolute;left:50%;top:-18px;transform:translateX(-50%);font-size:10px;color:#999;white-space:nowrap;">via ${sideLabel}</span></div></div>`;
       html += `<div class="tile-wrap"><div class="${cls}" onclick="${isActive ? `completeCustom(${customSteps.indexOf(c)})` : ''}">${inner}</div></div>`;
       if (isDone) { completedCustomCount++; totalCount++; }
     }
