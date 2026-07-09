@@ -498,6 +498,7 @@
 
       <div class="stats">
         <span>🎯 已完成 <strong id="done">0</strong> / <strong id="total">0</strong></span>
+        <span>📌 自訂 <strong id="customCount">0</strong></span>
         <span id="statusText">🔒 點擊解鎖下一關</span>
       </div>
     </div>
@@ -582,26 +583,9 @@
         </div>`;
       }
 
-      // Insert custom tiles before this tile (from previous arrow)
+      // Custom tiles tracked but NOT displayed as separate tiles
       const customBefore = customTiles.filter(c => c.insertAfter === i - 1);
-      customBefore.forEach((ct, ci) => {
-        html += `
-          <div class="tile-wrap">
-            <div class="connector" style="opacity:0.5">
-              <div class="arrow-down active"></div>
-              <div class="plus-btn added">✓</div>
-            </div>
-            <div class="tile custom current" onclick="clickCustomTile('${ct.uid}')">
-              <div class="tile-inner">
-                <div class="tile-icon">${ct.icon}</div>
-                <div class="tile-number">✏️ 自訂</div>
-                <div class="tile-name">${ct.name}</div>
-                ${ct.desc ? `<div style="font-size:9px;opacity:0.7;margin-top:4px">${ct.desc}</div>` : ''}
-                <div style="font-size:16px;margin-top:4px">📍</div>
-              </div>
-            </div>
-          </div>`;
-      });
+      // They're tracked in customTiles array for completion stats only
 
       let innerContent = '';
       if (isStart && currentTile === 0) {
@@ -660,6 +644,7 @@
     path.innerHTML = html;
     document.getElementById('done').textContent = completed.length;
     document.getElementById('total').textContent = tiles.length;
+    document.getElementById('customCount').textContent = customTiles.length;
     const progress = (completed.length / tiles.length) * 100;
     document.getElementById('progressFill').style.width = progress + '%';
     const statusText = document.getElementById('statusText');
