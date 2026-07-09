@@ -23,8 +23,6 @@
     align-items: center;
     position: relative;
   }
-
-  /* Title */
   .title {
     font-size: 24px;
     font-weight: 700;
@@ -37,8 +35,6 @@
     color: #95a5a6;
     margin-bottom: 30px;
   }
-
-  /* Path container */
   .path {
     display: flex;
     flex-direction: column;
@@ -48,8 +44,6 @@
     position: relative;
     padding: 10px 0;
   }
-
-  /* Each tile/floor */
   .tile-wrap {
     display: flex;
     flex-direction: column;
@@ -58,8 +52,6 @@
     width: 100%;
     margin: -8px 0;
   }
-
-  /* Diamond tile */
   .tile {
     width: 180px;
     height: 180px;
@@ -74,7 +66,6 @@
     border: 3px solid;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
   }
-
   .tile-inner {
     transform: rotate(-45deg);
     display: flex;
@@ -86,54 +77,42 @@
     height: 100%;
     padding: 10px;
   }
-
-  /* Tile states */
   .tile.start {
     background: linear-gradient(135deg, #fff5e6, #ffe0b2);
     border-color: #f39c12;
   }
   .tile.start .tile-inner { color: #e67e22; }
-
-  .tile.locked {
-    background: #ecf0f1;
-    border-color: #bdc3c7;
-    opacity: 0.9;
+  .tile.custom {
+    background: linear-gradient(135deg, #f0e6ff, #e0ccff);
+    border-color: #9b59b6;
   }
-  .tile.locked .tile-inner { color: #95a5a6; }
-
+  .tile.custom .tile-inner { color: #8e44ad; }
   .tile.completed {
     background: linear-gradient(135deg, #eafaf1, #d5f5e3);
     border-color: #2ecc71;
   }
   .tile.completed .tile-inner { color: #27ae60; }
-
   .tile.current {
     background: linear-gradient(135deg, #ebf5fb, #d6eaf8);
     border-color: #3498db;
     animation: pulse 2s ease-in-out infinite;
   }
   .tile.current .tile-inner { color: #2980b9; }
-
   @keyframes pulse {
     0%, 100% { box-shadow: 0 4px 15px rgba(52,152,219,0.15); }
     50% { box-shadow: 0 4px 25px rgba(52,152,219,0.35); }
   }
-
-  /* Tile icon */
-  .tile-icon {
-    font-size: 36px;
-    margin-bottom: 4px;
+  .tile-icon { font-size: 36px; margin-bottom: 4px; }
+  .tile-number { font-size: 11px; font-weight: 700; opacity: 0.6; }
+  .tile-name { font-size: 12px; font-weight: 600; margin-top: 2px; }
+  .tile.tiny {
+    width: 100px;
+    height: 100px;
+    margin: -26px 0;
   }
-  .tile-number {
-    font-size: 11px;
-    font-weight: 700;
-    opacity: 0.6;
-  }
-  .tile-name {
-    font-size: 12px;
-    font-weight: 600;
-    margin-top: 2px;
-  }
+  .tile.tiny .tile-icon { font-size: 22px; }
+  .tile.tiny .tile-number { font-size: 9px; }
+  .tile.tiny .tile-name { font-size: 10px; }
 
   /* Character */
   .character-area {
@@ -145,365 +124,143 @@
     transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   .char {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    width: 48px; height: 48px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
     filter: drop-shadow(0 3px 8px rgba(0,0,0,0.15));
   }
   .char-head {
-    width: 18px;
-    height: 18px;
-    background: #f1c40f;
-    border-radius: 50%;
+    width: 18px; height: 18px;
+    background: #f1c40f; border-radius: 50%;
     border: 2px solid #e0b800;
   }
   .char-body {
-    width: 4px;
-    height: 14px;
-    background: #f1c40f;
-    border-radius: 2px;
-    margin-top: -2px;
-    position: relative;
+    width: 4px; height: 14px;
+    background: #f1c40f; border-radius: 2px;
+    margin-top: -2px; position: relative;
   }
   .char-body::before, .char-body::after {
-    content: '';
-    position: absolute;
-    width: 3px;
-    height: 10px;
-    background: #f1c40f;
-    border-radius: 2px;
+    content: ''; position: absolute;
+    width: 3px; height: 10px;
+    background: #f1c40f; border-radius: 2px;
   }
   .char-body::before { left: -8px; top: 2px; transform: rotate(-30deg); }
   .char-body::after { right: -8px; top: 2px; transform: rotate(30deg); }
-  .char-legs {
-    display: flex;
-    gap: 6px;
-    margin-top: -1px;
-  }
+  .char-legs { display: flex; gap: 6px; margin-top: -1px; }
   .char-legs span {
-    width: 3px;
-    height: 10px;
-    background: #e67e22;
-    border-radius: 2px;
+    width: 3px; height: 10px;
+    background: #e67e22; border-radius: 2px;
   }
   .char-legs span:first-child { transform: rotate(-10deg); }
   .char-legs span:last-child { transform: rotate(10deg); }
-
   .char-name {
     position: absolute;
-    top: -28px;
-    left: 50%;
+    top: -28px; left: 50%;
     transform: translateX(-50%);
-    font-size: 12px;
-    font-weight: 700;
-    color: #2c3e50;
-    background: white;
-    padding: 2px 10px;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    white-space: nowrap;
+    font-size: 12px; font-weight: 700; color: #2c3e50;
+    background: white; padding: 2px 10px; border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08); white-space: nowrap;
   }
 
-  /* Arrow between tiles */
+  /* Connector */
   .connector {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: -2px 0;
-    z-index: 2;
-    width: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; position: relative; cursor: pointer;
   }
+  .plus-btn {
+    width: 32px; height: 32px;
+    background: white; border: 2px dashed #bbb;
+    border-radius: 50%; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 18px; color: #999; cursor: pointer;
+    margin: 2px 0; z-index: 5;
+    transition: all 0.2s;
+  }
+  .plus-btn:hover { border-color: #3498db; color: #3498db; background: #ebf5fb; }
+  .plus-btn.completed { border-color: #2ecc71; color: #2ecc71; background: #eafaf1; }
+
   .arrow-down {
-    width: 0;
-    height: 0;
+    width: 0; height: 0;
     border-left: 12px solid transparent;
     border-right: 12px solid transparent;
     border-top: 20px solid #bdc3c7;
+    margin: -2px 0; z-index: 2;
     transition: border-top-color 0.5s;
   }
-  .arrow-down.active {
-    border-top-color: #2ecc71;
-  }
-  .arrow-down.current-arrow {
-    border-top-color: #3498db;
-    animation: bob 1.5s ease-in-out infinite;
-  }
-  @keyframes bob {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-  }
-  /* + button between tiles */
-  .plus-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: white;
-    border: 2px dashed #bdc3c7;
-    color: #7f8c8d;
-    font-size: 18px;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: -8px;
-    transition: all 0.3s;
-    position: relative;
-    z-index: 5;
-  }
-  .plus-btn:hover {
-    border-color: #3498db;
-    color: #3498db;
-    background: #ebf5fb;
-  }
-  .plus-btn.added {
-    border-style: solid;
-    border-color: #2ecc71;
-    background: #eafaf1;
-    color: #2ecc71;
-  }
-  /* Custom tile (inserted by user) */
-  .tile.custom {
-    background: linear-gradient(135deg, #f4ecf7, #e8daef);
-    border-color: #9b59b6;
-  }
-  .tile.custom .tile-inner { color: #8e44ad; }
+  .arrow-down.completed { border-top-color: #2ecc71; }
 
-  /* Achievement popup */
-  .achievement-overlay {
-    display: none;
-    position: fixed;
+  /* Modals */
+  .achievement-overlay, .task-modal {
+    display: none; position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 100;
-    justify-content: center;
-    align-items: center;
+    background: rgba(0,0,0,0.5); z-index: 100;
+    justify-content: center; align-items: center;
   }
-  .achievement-overlay.show {
-    display: flex;
-    animation: fadeIn 0.3s ease;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .achievement-card {
-    background: white;
-    border-radius: 20px;
-    padding: 30px 25px;
-    max-width: 320px;
-    width: 90%;
-    text-align: center;
+  .achievement-overlay.show, .task-modal.show { display: flex; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .achievement-card, .task-card {
+    background: white; border-radius: 20px; padding: 30px 25px;
+    max-width: 340px; width: 90%; text-align: center;
     box-shadow: 0 20px 60px rgba(0,0,0,0.2);
     animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-  @keyframes popIn {
-    0% { transform: scale(0.5); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-  }
-  .achievement-card .trophy {
-    font-size: 56px;
-    margin-bottom: 10px;
-  }
-  .achievement-card .ach-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 4px;
-  }
-  .achievement-card .ach-desc {
-    font-size: 14px;
-    color: #7f8c8d;
-    margin-bottom: 6px;
-  }
-  .achievement-card .ach-time {
-    font-size: 11px;
-    color: #bdc3c7;
-    margin-bottom: 18px;
-  }
-  .achievement-card .ach-btn {
+  @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .achievement-card .trophy { font-size: 56px; margin-bottom: 10px; }
+  .achievement-card .ach-title { font-size: 20px; font-weight: 700; color: #2c3e50; margin-bottom: 4px; }
+  .achievement-card .ach-desc { font-size: 14px; color: #7f8c8d; margin-bottom: 6px; }
+  .achievement-card .ach-time { font-size: 11px; color: #bdc3c7; margin-bottom: 18px; }
+  .achievement-card .ach-btn, .task-card .btn {
     background: linear-gradient(135deg, #3498db, #2980b9);
-    color: white;
-    border: none;
-    border-radius: 25px;
-    padding: 10px 30px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s;
+    color: white; border: none; border-radius: 25px; padding: 10px 30px;
+    font-size: 15px; font-weight: 600; cursor: pointer;
   }
-  .achievement-card .ach-btn:hover {
-    transform: scale(1.05);
-  }
-
-  /* Progress bar */
-  .progress-bar {
-    width: 100%;
-    height: 6px;
-    background: #ecf0f1;
-    border-radius: 3px;
-    margin: 20px 0 10px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #2ecc71, #27ae60);
-    border-radius: 3px;
-    transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .stats {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    color: #7f8c8d;
-    font-size: 12px;
-    margin-top: 15px;
-    padding: 0 10px;
-  }
-  .stats span strong { color: #2c3e50; }
-
-  /* Custom task input */
-  .task-modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 100;
-    justify-content: center;
-    align-items: center;
-  }
-  .task-modal.show { display: flex; }
-  .task-card {
-    background: white;
-    border-radius: 20px;
-    padding: 25px;
-    max-width: 340px;
-    width: 90%;
-    text-align: center;
-  }
-  .task-card h3 {
-    font-size: 18px;
-    color: #2c3e50;
-    margin-bottom: 15px;
-  }
+  .achievement-card .ach-btn:hover, .task-card .btn:hover { transform: scale(1.05); }
   .task-card input, .task-card textarea {
-    width: 100%;
-    border: 2px solid #ddd;
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 14px;
-    margin-bottom: 12px;
-    font-family: inherit;
-    outline: none;
-    transition: border-color 0.3s;
+    width: 100%; border: 2px solid #ddd; border-radius: 10px;
+    padding: 10px 14px; font-size: 14px; margin-bottom: 12px;
+    font-family: inherit; outline: none;
   }
-  .task-card input:focus, .task-card textarea:focus {
-    border-color: #3498db;
-  }
-  .task-card textarea {
-    height: 80px;
-    resize: vertical;
-  }
-  .task-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-  }
-  .task-actions button {
-    padding: 8px 20px;
-    border-radius: 20px;
-    border: none;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  .btn-primary {
-    background: linear-gradient(135deg, #3498db, #2980b9);
-    color: white;
-  }
-  .btn-secondary {
-    background: #ecf0f1;
-    color: #7f8c8d;
-  }
+  .task-card input:focus, .task-card textarea:focus { border-color: #3498db; }
+  .task-card textarea { height: 80px; resize: vertical; }
+  .task-card h3 { font-size: 18px; color: #2c3e50; margin-bottom: 15px; }
 
-  /* ========== ZOOM WRAPPER ========== */
+  /* Zoom wrapper */
   #zoomWrap {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    overflow: hidden;
-    touch-action: none;
-    cursor: grab;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    overflow: hidden; touch-action: none; cursor: grab;
     background: #f5f0e8;
   }
   #zoomWrap.grabbing { cursor: grabbing; }
   #zoomContent {
-    position: absolute;
-    top: 0; left: 0;
+    position: absolute; top: 0; left: 0;
     width: 100%; height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transform-origin: center center;
-    will-change: transform;
-    transition: none;
+    display: flex; justify-content: center; align-items: center;
+    transform-origin: center center; will-change: transform;
   }
-
-  /* Zoom controls */
   .zoom-controls {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 8px;
-    z-index: 50;
-    background: rgba(255,255,255,.9);
-    padding: 6px 12px;
-    border-radius: 30px;
+    position: fixed; bottom: 30px; left: 50%;
+    transform: translateX(-50%); display: flex; gap: 8px;
+    z-index: 50; background: rgba(255,255,255,.9);
+    padding: 6px 12px; border-radius: 30px;
     box-shadow: 0 2px 12px rgba(0,0,0,.12);
-    backdrop-filter: blur(6px);
   }
   .zoom-controls button {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    border: 1px solid #ddd;
-    background: white;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid #ddd; background: white;
+    font-size: 18px; cursor: pointer;
   }
   .zoom-controls button:active { transform: scale(.92); }
 </style>
 </head>
 <body>
-
 <div id="zoomWrap">
   <div id="zoomContent">
     <div class="game-board" id="gameBoard">
-      <!-- ZOOM: game board unchanged -->
       <div class="title">🗺️ 創業旅程</div>
-      <div class="subtitle">每一步解鎖一個里程碑</div>
-
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill" style="width:0%"></div>
-      </div>
-
+      <div class="subtitle">完成 Step 1 後，按 + 加入你嘅里程碑</div>
       <div class="path" id="path"></div>
-
-      <div class="stats">
-        <span>🎯 已完成 <strong id="done">0</strong> / <strong id="total">0</strong></span>
-        <span>📌 自訂 <strong id="customCount">0</strong></span>
-        <span id="statusText">🔒 點擊解鎖下一關</span>
-      </div>
     </div>
   </div>
-
   <div class="zoom-controls">
     <button onclick="zoomOut()">−</button>
     <button onclick="resetView()">⟲</button>
@@ -511,299 +268,255 @@
   </div>
 </div>
 
-<!-- Achievement popup -->
+<!-- Achievement -->
 <div class="achievement-overlay" id="achPopup">
   <div class="achievement-card">
     <div class="trophy" id="achIcon">🏆</div>
     <div class="ach-title" id="achTitle">成就解鎖！</div>
-    <div class="ach-desc" id="achDesc">你完成咗一個里程碑</div>
-    <div class="ach-time" id="achTime">2026-07-09 12:00</div>
-    <button class="ach-btn" onclick="closeAchievement()">🎉 繼續旅程</button>
+    <div class="ach-desc" id="achDesc"></div>
+    <div class="ach-time" id="achTime"></div>
+    <button class="ach-btn" onclick="closeAch()">🎉 繼續</button>
   </div>
 </div>
 
-<!-- Task input modal -->
-<div class="task-modal" id="taskModal">
+<!-- Add custom modal -->
+<div class="task-modal" id="addModal">
   <div class="task-card">
-    <h3 id="taskTitle">✏️ 填寫 Project 資料</h3>
-    <input type="text" id="taskInput" placeholder="你嘅 Project 名...">
-    <textarea id="taskDesc" placeholder="簡單描述..."></textarea>
-    <div class="task-actions">
-      <button class="btn-primary" onclick="submitTask()">✅ 確認</button>
-      <button class="btn-secondary" onclick="closeTask()">✖️ 跳過</button>
-    </div>
+    <h3>➕ 加入新里程碑</h3>
+    <input id="addName" placeholder="里程碑名（例如：市場研究）">
+    <textarea id="addDesc" placeholder="簡單描述（選擇性）"></textarea>
+    <button class="btn" onclick="submitAdd()">✅ 加入</button>
   </div>
 </div>
 
 <script>
-  // ===== DATA (unchanged) =====
-  const tiles = [
-    { id: 1, icon: '💠', name: '創立 Project', desc: '輸入你嘅 project 名，正式出發', color: '#f39c12', task: true },
-    { id: 2, icon: '🔍', name: '市場研究', desc: '分析市場需求同競爭對手', color: '#e74c3c', task: true },
-    { id: 3, icon: '💡', name: 'Idea Validation', desc: '同真實用家傾談，驗證你嘅諗法', color: '#e67e22', task: false },
-    { id: 4, icon: '🛠️', name: 'MVP 開發', desc: '砌出最細可行產品', color: '#f1c40f', task: false },
-    { id: 5, icon: '🚀', name: 'Launch', desc: '正式推出俾用家用', color: '#2ecc71', task: false },
-    { id: 6, icon: '📈', name: 'Traction', desc: '獲取早期用戶同反饋', color: '#3498db', task: false },
-    { id: 7, icon: '🏆', name: '0→1 完成', desc: '達到 Product-Market Fit 🎉', color: '#9b59b6', task: false },
-  ];
+// ===== DATA =====
+const steps = [
+  { icon: '💠', name: '創立 Project', desc: '開始你嘅創業旅程' }
+];
+let curStep = 0; // 0 = not started
+let customSteps = []; // { icon, name, desc, completed }
+let userName = '';
 
-  let currentTile = 0;
-  let completed = [];
-  let userName = '';
-  let customTiles = []; // { insertAfter: index, name: '...', icon: '...', desc: '...' }
-  let customArrows = new Set(); // track which arrows have custom tiles
+// ===== RENDER =====
+function render() {
+  const path = document.getElementById('path');
+  let html = '';
+  let allItems = [];
 
-  // ===== RENDER (unchanged) =====
-  function render() {
-    const path = document.getElementById('path');
-    let html = '';
-
-    tiles.forEach((tile, i) => {
-      const isStart = i === 0;
-      const isCurrent = i === currentTile && currentTile > 0;
-      const isCompleted = completed.includes(i);
-      const isLocked = i > currentTile || (currentTile === 0 && i > 0);
-
-      let cls = 'tile ';
-      if (isStart && currentTile === 0) cls += 'start';
-      else if (isCurrent) cls += 'current';
-      else if (isCompleted) cls += 'completed';
-      else if (isLocked) cls += 'locked';
-
-      let arrowHtml = '';
-      if (i > 0) {
-        const prevCompleted = completed.includes(i-1) || (isCurrent && completed.includes(i-1));
-        const isCurrentArrow = i === currentTile + 1;
-        let arrowCls = 'arrow-down';
-        if (prevCompleted) arrowCls += ' active';
-        if (isCurrentArrow && currentTile > 0) arrowCls += ' current-arrow';
-        arrowHtml = `<div class="connector">
-          <div class="${arrowCls}"></div>
-          <div class="plus-btn ${customArrows.has(i) ? 'added' : ''}" onclick="event.stopPropagation();openAddCustom(${i})">${customArrows.has(i) ? '✓' : '+'}</div>
-        </div>`;
+  // Build all items: preset steps + custom steps interleaved
+  for (let i = 0; i < steps.length; i++) {
+    if (i > 0) {
+      // + button between preset steps
+      allItems.push({ type: 'plus', after: i - 1 });
+    }
+    allItems.push({ type: 'preset', index: i });
+    // custom steps inserted after this preset
+    const after = customSteps.filter(c => c.afterPreset === i);
+    after.forEach((c, ci) => {
+      allItems.push({ type: 'custom', data: c });
+      if (ci < after.length - 1) {
+        allItems.push({ type: 'plus', afterPreset: i, customIndex: ci });
       }
-
-      // Custom tiles tracked but NOT displayed as separate tiles
-      const customBefore = customTiles.filter(c => c.insertAfter === i - 1);
-      // They're tracked in customTiles array for completion stats only
-
-      let innerContent = '';
-      if (isStart && currentTile === 0) {
-        innerContent = `
-          <div class="tile-inner">
-            <div class="tile-icon">${tile.icon}</div>
-            <div class="tile-number">Step ${tile.id}</div>
-            <div class="tile-name">${tile.name}</div>
-          </div>
-          <div class="character-area">
-            <div class="char">
-              <div class="char-name" id="charName">${userName || '你'}</div>
-              <div class="char-head"></div>
-              <div class="char-body"></div>
-              <div class="char-legs"><span></span><span></span></div>
-            </div>
-          </div>
-        `;
-      } else {
-        innerContent = `
-          <div class="tile-inner">
-            <div class="tile-icon">${tile.icon}</div>
-            <div class="tile-number">Step ${tile.id}</div>
-            <div class="tile-name">${tile.name}</div>
-            ${tile.desc ? `<div style="font-size:9px;opacity:0.7;margin-top:4px">${tile.desc}</div>` : ''}
-            ${isCompleted ? '<div style="font-size:16px;margin-top:4px">✅</div>' : ''}
-            ${isLocked ? '<div style="font-size:16px;margin-top:4px">🔒</div>' : ''}
-            ${isCurrent && !isCompleted ? '<div style="font-size:16px;margin-top:4px">📍</div>' : ''}
-          </div>
-        `;
-
-        if (isCurrent && !isCompleted) {
-          innerContent += `
-            <div class="character-area">
-              <div class="char">
-                <div class="char-name" id="charName">${userName || '你'}</div>
-                <div class="char-head"></div>
-                <div class="char-body"></div>
-                <div class="char-legs"><span></span><span></span></div>
-              </div>
-            </div>
-          `;
-        }
-      }
-
-      html += `
-        <div class="tile-wrap">
-          ${arrowHtml}
-          <div class="${cls}" data-index="${i}" onclick="${isLocked ? '' : isCompleted ? '' : isCurrent && !isCompleted ? `clickTile(${i})` : isStart && currentTile === 0 ? `startJourney(${i})` : ''}">
-            ${innerContent}
-          </div>
-        </div>
-      `;
     });
-
-    path.innerHTML = html;
-    document.getElementById('done').textContent = completed.length;
-    document.getElementById('total').textContent = tiles.length;
-    document.getElementById('customCount').textContent = customTiles.length;
-    const progress = (completed.length / tiles.length) * 100;
-    document.getElementById('progressFill').style.width = progress + '%';
-    const statusText = document.getElementById('statusText');
-    if (currentTile === 0) {
-      statusText.textContent = '💠 點擊菱形格開始旅程';
-    } else if (completed.length === tiles.length) {
-      statusText.textContent = '🎉 恭喜！你完成咗整趟旅程！';
-    } else {
-      const currentTileData = tiles[currentTile];
-      statusText.textContent = `🚶 正在: ${currentTileData.name} — 點擊完成任務`;
+    // Only show + after step 1 if we're past it
+    if (i === 0 && curStep > 0) {
+      const hasCustomAt0 = customSteps.filter(c => c.afterPreset === 0);
+      allItems.push({ type: 'plus', after: 0 });
     }
   }
 
-  function startJourney(index) {
-    const name = prompt('✏️ 輸入你嘅名：', userName || '');
-    if (name === null) return;
-    userName = name || '創業者';
-    currentTile = 1;
-    render();
+  // Add + after last item
+  const lastPreset = steps.length - 1;
+  const customAfterLast = customSteps.filter(c => c.afterPreset === lastPreset);
+  if (customAfterLast.length > 0) {
+    allItems.push({ type: 'plus', after: lastPreset });
+  } else if (curStep > lastPreset) {
+    allItems.push({ type: 'plus', after: lastPreset });
   }
 
-  function clickTile(index) {
-    if (completed.includes(index)) return;
-    if (index !== currentTile) return;
-    const tile = tiles[index];
-    if (tile.task) {
-      document.getElementById('taskTitle').textContent = `✏️ ${tile.name}`;
-      document.getElementById('taskInput').value = '';
-      document.getElementById('taskDesc').value = '';
-      document.getElementById('taskInput').placeholder = tile.id === 1 ? '你嘅 Project 名...' : '輸入內容...';
-      document.getElementById('taskDesc').placeholder = '簡單描述...';
-      document.getElementById('taskModal').classList.add('show');
-      window._currentTaskIndex = index;
-    } else {
-      completeTile(index);
+  let completedCustomCount = 0;
+  let totalCount = 0;
+
+  allItems.forEach((item, idx) => {
+    if (item.type === 'plus') {
+      const alreadyAdded = customSteps.some(c => c.afterPreset === (item.after !== undefined ? item.after : (curStep - 1)));
+      html += `<div class="connector"><div class="plus-btn ${alreadyAdded ? 'completed' : ''}" onclick="openAddModal()">${alreadyAdded ? '✓' : '+'}</div></div>`;
+    } else if (item.type === 'preset') {
+      const i = item.index;
+      const isCur = i === curStep;
+      const isDone = i < curStep;
+      const isStart = i === 0 && curStep === 0;
+      
+      let cls = 'tile';
+      if (isStart) cls += ' start';
+      else if (isDone) cls += ' completed';
+      else if (isCur) cls += ' current';
+
+      let inner = `
+        <div class="tile-inner">
+          <div class="tile-icon">${isDone ? '✅' : steps[i].icon}</div>
+          <div class="tile-number">Step ${i+1}</div>
+          <div class="tile-name">${steps[i].name}</div>
+          ${steps[i].desc ? `<div style="font-size:9px;opacity:0.7;margin-top:4px">${steps[i].desc}</div>` : ''}
+        </div>`;
+
+      // Character on current preset
+      if (isCur && curStep > 0) {
+        inner += `<div class="character-area"><div class="char">
+          <div class="char-name">${userName || '你'}</div>
+          <div class="char-head"></div><div class="char-body"></div>
+          <div class="char-legs"><span></span><span></span></div>
+        </div></div>`;
+      }
+
+      html += `<div class="tile-wrap"><div class="${cls}" onclick="${isStart ? `startJourney()` : isCur ? `completePreset(${i})` : ''}">${inner}</div></div>`;
+      if (isStart) totalCount++;
+      else if (isCur) { totalCount++; totalCount++; } // current + future
+      else totalCount++;
+
+    } else if (item.type === 'custom') {
+      const c = item.data;
+      const isCur = curStep === steps.length + customSteps.filter(x => x.completed).length;
+      const isDone = c.completed;
+      
+      // Calculate if this is the current active custom tile
+      const doneCustoms = customSteps.filter(x => x.completed).length;
+      const curAll = steps.length + doneCustoms;
+      const thisIdx = steps.length + customSteps.indexOf(c);
+      const isActive = !c.completed && (thisIdx === curAll || (curStep >= steps.length && !isDone && customSteps.indexOf(c) === doneCustoms));
+
+      let cls = 'tile custom tiny';
+      if (isDone) cls += ' completed';
+      else if (isActive) cls += ' current';
+
+      let inner = `<div class="tile-inner">
+        <div class="tile-icon">${isDone ? '✅' : c.icon}</div>
+        <div class="tile-name">${c.name}</div>
+      </div>`;
+
+      if (isActive) {
+        inner += `<div class="character-area"><div class="char">
+          <div class="char-name">${userName || '你'}</div>
+          <div class="char-head"></div><div class="char-body"></div>
+          <div class="char-legs"><span></span><span></span></div>
+        </div></div>`;
+      }
+
+      html += `<div class="tile-wrap"><div class="${cls}" onclick="${isActive ? `completeCustom(${customSteps.indexOf(c)})` : ''}">${inner}</div></div>`;
+      if (isDone) { completedCustomCount++; totalCount++; }
     }
-  }
+  });
 
-  function submitTask() {
-    const index = window._currentTaskIndex;
-    const input = document.getElementById('taskInput').value.trim();
-    const desc = document.getElementById('taskDesc').value.trim();
-    if (index === 0 && !input) { alert('請輸入 Project 名 ✏️'); return; }
-    closeTask();
-    completeTile(index, input, desc);
-  }
+  path.innerHTML = html;
+}
 
-  function closeTask() { document.getElementById('taskModal').classList.remove('show'); }
-
-  function completeTile(index, input, desc) {
-    if (completed.includes(index)) return;
-    completed.push(index);
-    const tile = tiles[index];
-    const now = new Date();
-    const timeStr = now.toLocaleString('zh-Hant', { timeZone: 'Asia/Hong_Kong' });
-    const icons = ['🏆', '🥇', '🌟', '🎖️', '🏅', '💎', '👑'];
-    document.getElementById('achIcon').textContent = icons[index] || '🏆';
-    document.getElementById('achTitle').textContent = `「${tile.name}」完成！`;
-    document.getElementById('achDesc').textContent = input ? `「${input}」${desc ? ' — ' + desc : ''}` : tile.desc;
-    document.getElementById('achTime').textContent = `⏱️ ${timeStr}`;
-    document.getElementById('achPopup').classList.add('show');
-    if (currentTile < tiles.length - 1) { currentTile++; }
-    render();
-  }
-
-  function closeAchievement() {
-    document.getElementById('achPopup').classList.remove('show');
-    if (completed.length === tiles.length + customTiles.filter(c => c.completed).length) {
-      setTimeout(() => { alert('🎉🎉🎉 恭喜你完成整趟創業旅程！由 0 去到 1 啦！🎉🎉🎉'); }, 300);
-    }
-  }
-
-  // ===== CUSTOM TILE + BUTTONS =====
-  function openAddCustom(afterIndex) {
-    const name = prompt('✏️ 新里程碑名：', '');
-    if (!name) return;
-    const desc = prompt('📝 簡單描述：', '') || '';
-    const icons = ['🌟', '⭐', '💫', '✨', '🎯', '📌', '💎', '🔥', '💪', '🎪'];
-    const icon = icons[Math.floor(Math.random() * icons.length)];
-    const uid = 'custom_' + Date.now();
-    customTiles.push({ uid, insertAfter: afterIndex, name, desc, icon, completed: false });
-    customArrows.add(afterIndex);
-    render();
-  }
-
-  function clickCustomTile(uid) {
-    const ct = customTiles.find(c => c.uid === uid);
-    if (!ct || ct.completed) return;
-    ct.completed = true;
-    const now = new Date();
-    const timeStr = now.toLocaleString('zh-Hant', { timeZone: 'Asia/Hong_Kong' });
-    document.getElementById('achIcon').textContent = '🌟';
-    document.getElementById('achTitle').textContent = `「${ct.name}」完成！`;
-    document.getElementById('achDesc').textContent = `自訂里程碑完成！`;
-    document.getElementById('achTime').textContent = `⏱️ ${timeStr}`;
-    document.getElementById('achPopup').classList.add('show');
-    render();
-  }
-
-  // ===== ZOOM (added on top, no design changes) =====
-  const zw = document.getElementById('zoomWrap');
-  const zc = document.getElementById('zoomContent');
-  let scale = 1, px = 0, py = 0, pan = false, sx = 0, sy = 0, ld = 0, ss = 1, spx = 0, spy = 0;
-
-  function apply() { zc.style.transform = `translate(${px}px, ${py}px) scale(${scale})`; }
-
-  function resetView() { scale = 1; px = 0; py = 0; apply(); }
-
-  function zoomIn() {
-    const ns = Math.min(scale * 1.4, 5);
-    px = window.innerWidth/2 - (window.innerWidth/2 - px) * (ns / scale);
-    py = window.innerHeight/2 - (window.innerHeight/2 - py) * (ns / scale);
-    scale = ns; apply();
-  }
-
-  function zoomOut() {
-    const ns = Math.max(scale / 1.4, 0.3);
-    px = window.innerWidth/2 - (window.innerWidth/2 - px) * (ns / scale);
-    py = window.innerHeight/2 - (window.innerHeight/2 - py) * (ns / scale);
-    scale = ns; apply();
-  }
-
-  // Mouse wheel zoom
-  zw.addEventListener('wheel', e => {
-    e.preventDefault();
-    const r = zw.getBoundingClientRect();
-    const mx = e.clientX - r.left, my = e.clientY - r.top;
-    const d = e.deltaY > 0 ? 0.9 : 1.1;
-    const ns = Math.max(0.3, Math.min(5, scale * d));
-    px = mx - (mx - px) * (ns / scale);
-    py = my - (my - py) * (ns / scale);
-    scale = ns; apply();
-  }, { passive: false });
-
-  // Touch pan + pinch
-  zw.addEventListener('touchstart', e => {
-    if (e.touches.length === 1) { pan = true; sx = e.touches[0].clientX - px; sy = e.touches[0].clientY - py; }
-    else if (e.touches.length === 2) { pan = false; ld = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); ss = scale; spx = px; spy = py; }
-  }, { passive: false });
-
-  zw.addEventListener('touchmove', e => {
-    e.preventDefault();
-    if (e.touches.length === 1 && pan) { px = e.touches[0].clientX - sx; py = e.touches[0].clientY - sy; apply(); }
-    else if (e.touches.length === 2) {
-      const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-      const ns = Math.max(0.3, Math.min(5, ss * (d / ld)));
-      scale = ns; px = spx; py = spy; apply();
-    }
-  }, { passive: false });
-
-  zw.addEventListener('touchend', () => { pan = false; }, { passive: false });
-
-  // Mouse pan
-  zw.addEventListener('mousedown', e => { pan = true; sx = e.clientX - px; sy = e.clientY - py; zw.classList.add('grabbing'); });
-  zw.addEventListener('mousemove', e => { if (!pan) return; px = e.clientX - sx; py = e.clientY - sy; apply(); });
-  zw.addEventListener('mouseup', () => { pan = false; zw.classList.remove('grabbing'); });
-  zw.addEventListener('mouseleave', () => { pan = false; zw.classList.remove('grabbing'); });
-
+// ===== ACTIONS =====
+function startJourney() {
+  const name = prompt('✏️ 你叫咩名？', userName || '');
+  if (name === null) return;
+  userName = name || '創業者';
+  curStep = 1;
   render();
+}
+
+function completePreset(i) {
+  if (i !== curStep) return;
+  curStep++;
+  const now = new Date();
+  showAch(steps[i].name, steps[i].desc, now);
+  render();
+}
+
+function openAddModal() {
+  document.getElementById('addName').value = '';
+  document.getElementById('addDesc').value = '';
+  document.getElementById('addModal').classList.add('show');
+}
+
+function submitAdd() {
+  const name = document.getElementById('addName').value.trim();
+  if (!name) { alert('請輸入里程碑名 ✏️'); return; }
+  const desc = document.getElementById('addDesc').value.trim() || '';
+  const icons = ['🌟','⭐','💫','✨','🎯','📌','💎','🔥','💪','🎪','📊','🎨','⚙️','📋','🔄'];
+  const icon = icons[customSteps.length % icons.length];
+  customSteps.push({ icon, name, desc, completed: false, afterPreset: 0 });
+  document.getElementById('addModal').classList.remove('show');
+  render();
+}
+
+function completeCustom(idx) {
+  const c = customSteps[idx];
+  if (c.completed) return;
+  c.completed = true;
+  const now = new Date();
+  showAch(c.name, c.desc, now);
+  render();
+}
+
+function showAch(name, desc, date) {
+  document.getElementById('achIcon').textContent = '🏆';
+  document.getElementById('achTitle').textContent = `「${name}」完成！`;
+  document.getElementById('achDesc').textContent = desc || '里程碑達成！';
+  document.getElementById('achTime').textContent = `⏱️ ${date.toLocaleString('zh-Hant', { timeZone: 'Asia/Hong_Kong' })}`;
+  document.getElementById('achPopup').classList.add('show');
+}
+
+function closeAch() {
+  document.getElementById('achPopup').classList.remove('show');
+}
+
+// ===== ZOOM =====
+const zw = document.getElementById('zoomWrap');
+const zc = document.getElementById('zoomContent');
+let scale = 1, px = 0, py = 0, pan = false, sx = 0, sy = 0, ld = 0, ss = 1, spx = 0, spy = 0;
+
+function apply() { zc.style.transform = `translate(${px}px, ${py}px) scale(${scale})`; }
+function resetView() { scale = 1; px = 0; py = 0; apply(); }
+
+function zoomIn() {
+  const ns = Math.min(scale * 1.4, 5);
+  px = window.innerWidth/2 - (window.innerWidth/2 - px) * (ns / scale);
+  py = window.innerHeight/2 - (window.innerHeight/2 - py) * (ns / scale);
+  scale = ns; apply();
+}
+function zoomOut() {
+  const ns = Math.max(scale / 1.4, 0.3);
+  px = window.innerWidth/2 - (window.innerWidth/2 - px) * (ns / scale);
+  py = window.innerHeight/2 - (window.innerHeight/2 - py) * (ns / scale);
+  scale = ns; apply();
+}
+
+zw.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = zw.getBoundingClientRect();
+  const mx = e.clientX - r.left, my = e.clientY - r.top;
+  const d = e.deltaY > 0 ? 0.9 : 1.1;
+  const ns = Math.max(0.3, Math.min(5, scale * d));
+  px = mx - (mx - px) * (ns / scale);
+  py = my - (my - py) * (ns / scale);
+  scale = ns; apply();
+}, { passive: false });
+
+zw.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) { pan = true; sx = e.touches[0].clientX - px; sy = e.touches[0].clientY - py; }
+  else if (e.touches.length === 2) { pan = false; ld = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); ss = scale; spx = px; spy = py; }
+}, { passive: false });
+zw.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (e.touches.length === 1 && pan) { px = e.touches[0].clientX - sx; py = e.touches[0].clientY - sy; apply(); }
+  else if (e.touches.length === 2) {
+    const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    scale = Math.max(0.3, Math.min(5, ss * (d / ld))); px = spx; py = spy; apply();
+  }
+}, { passive: false });
+zw.addEventListener('touchend', () => { pan = false; }, { passive: false });
+zw.addEventListener('mousedown', e => { pan = true; sx = e.clientX - px; sy = e.clientY - py; zw.classList.add('grabbing'); });
+zw.addEventListener('mousemove', e => { if (!pan) return; px = e.clientX - sx; py = e.clientY - sy; apply(); });
+zw.addEventListener('mouseup', () => { pan = false; zw.classList.remove('grabbing'); });
+zw.addEventListener('mouseleave', () => { pan = false; zw.classList.remove('grabbing'); });
+
+render();
 </script>
 </body>
 </html>
