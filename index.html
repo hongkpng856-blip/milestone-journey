@@ -380,10 +380,10 @@ function render() {
       const hasR = customSteps.some(c => c.side === 'right' && c.afterStep === i);
       const hasT = customSteps.some(c => c.side === 'top' && c.afterStep === i);
       const hasB = customSteps.some(c => c.side === 'bottom' && c.afterStep === i);
-      inner += `<div class="side-plus" style="left:-36px;top:50%;margin-top:-14px; ${hasL ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'left')">${hasL ? '✓' : '+'}</div>`;
-      inner += `<div class="side-plus" style="right:-36px;top:50%;margin-top:-14px; ${hasR ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'right')">${hasR ? '✓' : '+'}</div>`;
-      inner += `<div class="side-plus" style="left:50%;top:-36px;margin-left:-14px; ${hasT ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'top')">${hasT ? '✓' : '+'}</div>`;
-      inner += `<div class="side-plus" style="left:50%;bottom:-36px;margin-left:-14px; ${hasB ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'bottom')">${hasB ? '✓' : '+'}</div>`;
+      inner += `<div class="side-plus" style="left:-36px;top:50%;margin-top:-14px; ${hasL ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'left')">'✓'</div>`;
+      inner += `<div class="side-plus" style="right:-36px;top:50%;margin-top:-14px; ${hasR ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'right')">'✓'</div>`;
+      inner += `<div class="side-plus" style="left:50%;top:-36px;margin-left:-14px; ${hasT ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'top')">'✓'</div>`;
+      inner += `<div class="side-plus" style="left:50%;bottom:-36px;margin-left:-14px; ${hasB ? 'border:2px solid #ddd;color:#2ecc71;background:#eafaf1' : ''}" onclick="event.stopPropagation();openAddModal(${i},'bottom')">'✓'</div>`;
 
       // Character on current preset
       if (isCur && curStep > 0) {
