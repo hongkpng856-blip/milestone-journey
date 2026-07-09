@@ -5,7 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <title>菱形旅程</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* Side plus buttons */
+  .side-plus {
+    position: absolute; z-index: 15;
+    width: 28px; height: 28px;
+    background: white; border: 2px dashed #bbb;
+    border-radius: 50%; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 16px; color: #999; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .side-plus:hover { border-color: #3498db; color: #3498db; background: #ebf5fb; }
+  .side-plus.added { border-color: #2ecc71; color: #2ecc71; background: #eafaf1; }
   body {
     background: #f5f0e8;
     font-family: 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
@@ -295,7 +306,8 @@ const steps = [
   { icon: '💠', name: '創立 Project', desc: '開始你嘅創業旅程' }
 ];
 let curStep = 0; // 0 = not started
-let customSteps = []; // { icon, name, desc, completed }
+let customSteps = []; // { icon, name, desc, completed, side: 'left'|'right'|'bottom'|'top', afterStep: 0 }
+let branchCounts = { left: 0, right: 0, bottom: 0, top: 0 };
 let userName = '';
 
 // ===== RENDER =====
@@ -361,6 +373,12 @@ function render() {
           ${steps[i].desc ? `<div style="font-size:9px;opacity:0.7;margin-top:4px">${steps[i].desc}</div>` : ''}
         </div>`;
 
+      // Side + buttons
+      const hasL = customSteps.some(c => c.side === 'left' && c.afterStep === i);
+      const hasR = customSteps.some(c => c.side === 'right' && c.afterStep === i);
+      inner += `<div class="side-plus" style="left:-36px;top:50%;margin-top:-14px" onclick="event.stopPropagation();openAddModal(${i},'left')">${hasL ? '✓' : '+'}</div>`;
+      inner += `<div class="side-plus" style="right:-36px;top:50%;margin-top:-14px" onclick="event.stopPropagation();openAddModal(${i},'right')">${hasR ? '✓' : '+'}</div>`;
+
       // Character on current preset
       if (isCur && curStep > 0) {
         inner += `<div class="character-area"><div class="char">
@@ -370,7 +388,25 @@ function render() {
         </div></div>`;
       }
 
-      html += `<div class="tile-wrap"><div class="${cls}" onclick="${isStart ? `startJourney()` : isCur ? `completePreset(${i})` : ''}">${inner}</div></div>`;
+      html += `<div class="tile-wrap" style="position:relative"><div class="${cls}" onclick="${isStart ? `startJourney()` : isCur ? `completePreset(${i})` : ''}">${inner}</div>`;
+
+      // Left/right branch tiles for this preset
+      const sideBranches = customSteps.filter(c => c.afterStep === i && ['left','right'].includes(c.side));
+      sideBranches.forEach((c, ci) => {
+        const isDone = c.completed;
+        const isActive = curStep >= steps.length && !isDone;
+        const offsetX = c.side === 'left' ? -130 : 130;
+        html += `<div class="side-branch" style="position:absolute;top:50%;left:50%;margin-left:${offsetX-50}px;margin-top:-50px;width:100px;height:100px;z-index:5">
+          <div class="tile custom tiny ${isDone?'completed':''} ${isActive?'current':''}" onclick="${isActive?`completeCustom(${customSteps.indexOf(c)})`:''}" style="width:100px;height:100px;margin:0">
+            <div class="tile-inner">
+              <div class="tile-icon">${isDone?'✅':c.icon}</div>
+              <div class="tile-name">${c.name}</div>
+            </div>
+          </div>
+        </div>`;
+      });
+
+      html += `</div>`;
       if (isStart) totalCount++;
       else if (isCur) { totalCount++; totalCount++; } // current + future
       else totalCount++;
@@ -428,7 +464,9 @@ function completePreset(i) {
   render();
 }
 
-function openAddModal() {
+function openAddModal(afterStep, side) {
+  window._addAfter = afterStep;
+  window._addSide = side;
   document.getElementById('addName').value = '';
   document.getElementById('addDesc').value = '';
   document.getElementById('addModal').classList.add('show');
@@ -440,7 +478,7 @@ function submitAdd() {
   const desc = document.getElementById('addDesc').value.trim() || '';
   const icons = ['🌟','⭐','💫','✨','🎯','📌','💎','🔥','💪','🎪','📊','🎨','⚙️','📋','🔄'];
   const icon = icons[customSteps.length % icons.length];
-  customSteps.push({ icon, name, desc, completed: false, afterPreset: 0 });
+  customSteps.push({ icon, name, desc, completed: false, side: window._addSide || 'bottom', afterStep: window._addAfter || 0 });
   document.getElementById('addModal').classList.remove('show');
   render();
 }
