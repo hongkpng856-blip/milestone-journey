@@ -434,6 +434,17 @@ function render() {
         </div></div>`;
       }
 
+      // Corner buttons for custom tile - same pattern as preset
+      const pi = c.afterStep !== undefined ? c.afterStep : 0;
+      const cHasL = customSteps.some(x => x.side === 'left' && x.afterStep === pi && customSteps.indexOf(x) > customSteps.indexOf(c) && x.afterPreset === pi);
+      const cHasT = customSteps.some(x => x.side === 'top' && x.afterStep === pi && customSteps.indexOf(x) > customSteps.indexOf(c) && x.afterPreset === pi);
+      const cHasR = customSteps.some(x => x.side === 'right' && x.afterStep === pi && customSteps.indexOf(x) > customSteps.indexOf(c) && x.afterPreset === pi);
+      const cHasB = customSteps.some(x => x.side === 'bottom' && x.afterStep === pi && customSteps.indexOf(x) > customSteps.indexOf(c) && x.afterPreset === pi);
+      inner += `<div class="side-plus ${cHasL?'always-show':''}" style="left:-14px;top:-14px;" onclick="event.stopPropagation();openAddModal(${pi},'left')">${cHasL?'↖':'+'}</div>`;
+      inner += `<div class="side-plus ${cHasT?'always-show':''}" style="left:calc(100% - 14px);top:-14px;" onclick="event.stopPropagation();openAddModal(${pi},'top')">${cHasT?'↗':'+'}</div>`;
+      inner += `<div class="side-plus ${cHasR?'always-show':''}" style="left:calc(100% - 14px);top:calc(100% - 14px);" onclick="event.stopPropagation();openAddModal(${pi},'right')">${cHasR?'↘':'+'}</div>`;
+      inner += `<div class="side-plus ${cHasB?'always-show':''}" style="left:-14px;top:calc(100% - 14px);" onclick="event.stopPropagation();openAddModal(${pi},'bottom')">${cHasB?'↙':'+'}</div>`;
+
       // Connector arrow from parent diamond
       const sideLabel = {left:'←',top:'↑',right:'→',bottom:'↓'}[c.side] || '▼';
       html += `<div class="connector"><div class="arrow-down ${isDone?'completed':''} branch-connector" style="position:relative;"><span style="position:absolute;left:50%;top:-18px;transform:translateX(-50%);font-size:10px;color:#999;white-space:nowrap;">${sideLabel}</span></div></div>`;
