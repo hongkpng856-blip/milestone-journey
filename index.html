@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>🏔️ 里程碑之旅</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes pop{0%{transform:scale(0);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes slideUp{0%{transform:translateY(40px);opacity:0}100%{transform:translateY(0);opacity:1}}
+@keyframes bounce{0%,100%{transform:translateY(0)}30%{transform:translateY(-20px)}50%{transform:translateY(-20px) rotate(-5deg)}70%{transform:translateY(-5px)}}
+@keyframes confetti{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(200px) rotate(720deg);opacity:0}}
+@keyframes walk{0%{left:0}100%{left:calc(100% - 50px)}}
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
+body{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);min-height:100vh;font-family:'Segoe UI','PingFang TC','Microsoft JhengHei',sans-serif;display:flex;justify-content:center;align-items:center;padding:20px;color:#fff}
+.container{max-width:420px;width:100%;position:relative}
+
+/* ─── Screen 1: Name Input ─── */
+.screen{display:none}
+.screen.active{display:block}
+#screen-name{text-align:center;padding:60px 20px}
+#screen-name h1{font-size:32px;margin-bottom:8px}
+#screen-name p{color:rgba(255,255,255,.6);font-size:14px;margin-bottom:30px}
+.name-wrap{display:flex;flex-direction:column;gap:12px;align-items:center}
+.name-wrap input{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:12px;padding:14px 20px;font-size:18px;color:#fff;width:100%;max-width:320px;text-align:center;outline:none;transition:.3s}
+.name-wrap input:focus{border-color:#e94560;background:rgba(233,69,96,.1)}
+.name-wrap input::placeholder{color:rgba(255,255,255,.3)}
+.name-wrap button{background:#e94560;color:#fff;border:none;border-radius:12px;padding:14px 40px;font-size:16px;cursor:pointer;transition:.3s;font-weight:600}
+.name-wrap button:hover{background:#c73650;transform:translateY(-2px)}
+.name-wrap button:disabled{background:#555;cursor:not-allowed;transform:none}
+
+/* ─── Screen 2: Game Board ─── */
+#screen-game{padding:20px 0}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding:0 10px}
+.header .title{font-size:14px;color:rgba(255,255,255,.5)}
+.header .title strong{color:#fff;font-size:18px}
+.trophy{background:rgba(255,255,255,.1);padding:6px 14px;border-radius:20px;font-size:12px;color:rgba(255,255,255,.7)}
+
+/* Character Banner */
+.char-banner{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.08);border-radius:16px;padding:14px 18px;margin-bottom:24px;border:1px solid rgba(255,255,255,.1)}
+.char-avatar{width:52px;height:52px;background:linear-gradient(135deg,#ffd93d,#ff6b6b);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#1a1a2e;box-shadow:0 4px 15px rgba(255,107,107,.3);animation:float 3s ease-in-out infinite;flex-shrink:0}
+.char-info{flex:1}
+.char-info .cname{font-size:16px;font-weight:600}
+.char-info .cstatus{font-size:12px;color:rgba(255,255,255,.5)}
+.char-level{background:rgba(255,215,0,.2);padding:4px 12px;border-radius:12px;font-size:11px;color:#ffd93d;border:1px solid rgba(255,215,0,.3)}
+
+/* Path / Floor */
+.path{position:relative;padding:0 10px}
+.floor{background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;margin-bottom:12px;cursor:pointer;transition:.4s;position:relative;overflow:hidden}
+.floor:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.1)}
+.floor .floor-num{font-size:11px;color:rgba(255,255,255,.3);margin-bottom:4px;letter-spacing:1px}
+.floor .floor-icon{font-size:28px;margin-bottom:6px}
+.floor .floor-title{font-size:15px;font-weight:600;margin-bottom:2px}
+.floor .floor-sub{font-size:11px;color:rgba(255,255,255,.4)}
+.floor.locked{opacity:.3;pointer-events:none}
+.floor.completed{background:rgba(46,204,113,.1);border-color:#2ecc71}
+.floor.completed .floor-num{color:#2ecc71}
+.floor.current{border-color:#ffd93d;background:rgba(255,217,61,.08);box-shadow:0 0 20px rgba(255,217,61,.15)}
+.floor.current::after{content:'📍';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:20px}
+
+/* ─── Modal / Popup ─── */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:100;justify-content:center;align-items:center;padding:20px;backdrop-filter:blur(4px)}
+.modal-overlay.active{display:flex}
+.modal{background:linear-gradient(145deg,#1e2a45,#2a1a3e);border-radius:24px;padding:30px 24px;max-width:380px;width:100%;animation:pop .4s ease;border:1px solid rgba(255,255,255,.1);text-align:center;position:relative;overflow:hidden}
+.modal::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(255,215,0,.05),transparent,rgba(255,107,107,.05),transparent);animation:spin 6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.modal>*{position:relative;z-index:1}
+.modal .trophy-icon{font-size:60px;margin-bottom:6px;display:block}
+.modal h2{font-size:22px;margin-bottom:4px}
+.modal .badge-date{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:16px}
+.modal .achievement{background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,107,107,.1));border-radius:12px;padding:14px;border:1px solid rgba(255,215,0,.2);margin-bottom:18px}
+.modal .achievement .ach-icon{font-size:36px;display:block;margin-bottom:4px}
+.modal .achievement .ach-title{font-size:16px;font-weight:700;color:#ffd93d}
+.modal .achievement .ach-desc{font-size:11px;color:rgba(255,255,255,.5)}
+.modal .modal-btns{display:flex;flex-direction:column;gap:10px}
+.modal .modal-btns button{display:flex;align-items:center;gap:10px;justify-content:center;width:100%;padding:14px;border-radius:12px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:.3s}
+.modal .btn-template{background:linear-gradient(135deg,#e94560,#c73650);color:#fff}
+.modal .btn-template:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(233,69,96,.3)}
+.modal .btn-custom{background:rgba(255,255,255,.1);color:#fff;border:2px dashed rgba(255,255,255,.2)!important}
+.modal .btn-custom:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)!important}
+.modal .close-btn{position:absolute;top:12px;right:16px;background:none;border:none;color:rgba(255,255,255,.3);font-size:22px;cursor:pointer;z-index:2;padding:4px}
+
+/* ─── Custom Task Input ─── */
+.custom-input-wrap{display:none;margin-top:12px}
+.custom-input-wrap.active{display:flex;flex-direction:column;gap:10px}
+.custom-input-wrap textarea{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:12px;color:#fff;font-size:13px;min-height:70px;resize:vertical;outline:none;font-family:inherit}
+.custom-input-wrap textarea:focus{border-color:#e94560}
+.custom-input-wrap .custom-actions{display:flex;gap:8px}
+.custom-input-wrap .custom-actions button{flex:1;padding:10px;border-radius:10px;border:none;font-size:13px;cursor:pointer;font-weight:600;transition:.3s}
+.custom-input-wrap .custom-actions .btn-add{background:#2ecc71;color:#fff}
+.custom-input-wrap .custom-actions .btn-add:hover{background:#27ae60}
+.custom-input-wrap .custom-actions .btn-cancel{background:rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
+.custom-input-wrap .custom-actions .btn-cancel:hover{background:rgba(255,255,255,.15)}
+
+/* ─── Template Selection ─── */
+.template-wrap{display:none;margin-top:12px;text-align:left}
+.template-wrap.active{display:flex;flex-direction:column;gap:8px}
+.template-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;cursor:pointer;transition:.3s}
+.template-item:hover{background:rgba(255,255,255,.1);border-color:#e94560}
+.template-item .t-icon{font-size:20px;margin-right:8px}
+.template-item .t-title{font-size:14px;font-weight:600}
+.template-item .t-desc{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+
+/* Confetti */
+.confetti-container{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:200;overflow:hidden}
+.confetti-piece{position:absolute;width:10px;height:10px;top:-10px;animation:confettiFall linear forwards}
+@keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+/* Responsive */
+@media(max-width:480px){
+  .container{padding:0}
+  .modal{padding:24px 18px;border-radius:18px}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ═══ Screen 1: Name Input ═══ -->
+  <div class="screen active" id="screen-name">
+    <h1>🏔️</h1>
+    <h1>里程碑之旅</h1>
+    <p>輸入你嘅名字展開旅程</p>
+    <div class="name-wrap">
+      <input type="text" id="nameInput" placeholder="例如：Sunny" maxlength="12" autofocus>
+      <button id="startBtn" disabled>🚀 開始旅程</button>
+    </div>
+  </div>
+
+  <!-- ═══ Screen 2: Game Board ═══ -->
+  <div class="screen" id="screen-game">
+    <div class="header">
+      <div class="title">🏔️ <strong>里程碑之旅</strong><br><span style="font-size:11px;color:rgba(255,255,255,.3)">創業者 0→1 路徑</span></div>
+      <div class="trophy">🏆 0 / ?</div>
+    </div>
+
+    <!-- Character Banner -->
+    <div class="char-banner">
+      <div class="char-avatar" id="charAvatar">😎</div>
+      <div class="char-info">
+        <div class="cname" id="charName">—</div>
+        <div class="cstatus" id="charStatus">📍 準備出發</div>
+      </div>
+      <div class="char-level" id="charLevel">Lv.0</div>
+    </div>
+
+    <!-- Path / Floors -->
+    <div class="path" id="pathContainer"></div>
+  </div>
+
+</div>
+
+<!-- ═══ Milestone Popup ═══ -->
+<div class="modal-overlay" id="milestoneModal">
+  <div class="modal">
+    <button class="close-btn" id="closeModalBtn">✕</button>
+    <span class="trophy-icon">🎉</span>
+    <h2>里程碑解鎖！</h2>
+    <div class="badge-date" id="modalDate">—</div>
+    <div class="achievement">
+      <span class="ach-icon" id="achIcon">🌱</span>
+      <div class="ach-title" id="achTitle">—</div>
+      <div class="ach-desc" id="achDesc">—</div>
+    </div>
+    <p style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:14px">下一步想做咩？</p>
+    <div class="modal-btns">
+      <button class="btn-template" id="btnTemplate">📋 根據模板繼續</button>
+      <button class="btn-custom" id="btnCustom">✏️ + 自訂</button>
+    </div>
+
+    <!-- Custom input (hidden initially) -->
+    <div class="custom-input-wrap" id="customWrap">
+      <textarea id="customText" placeholder="輸入你自訂嘅任務/idea…"></textarea>
+      <div class="custom-actions">
+        <button class="btn-cancel" id="customCancel">取消</button>
+        <button class="btn-add" id="customAdd">✅ 加入</button>
+      </div>
+    </div>
+
+    <!-- Template selection (hidden initially) -->
+    <div class="template-wrap" id="templateWrap">
+      <div class="template-item" data-step="market">
+        <span class="t-icon">🔍</span>
+        <span class="t-title">市場研究</span>
+        <div class="t-desc">分析市場規模、競爭對手、目標客群</div>
+      </div>
+      <div class="template-item" data-step="validate">
+        <span class="t-icon">💡</span>
+        <span class="t-title">Idea Validation</span>
+        <div class="t-desc">做用戶訪談驗證 idea 有冇市場需求</div>
+      </div>
+      <div class="template-item" data-step="mvp">
+        <span class="t-icon">🛠️</span>
+        <span class="t-title">MVP 開發</span>
+        <div class="t-desc">打造最細可行產品，快速測試</div>
+      </div>
+      <div class="template-item" data-step="launch">
+        <span class="t-icon">🚀</span>
+        <span class="t-title">Launch</span>
+        <div class="t-desc">產品正式上線推出市場</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ End Game Modal ═══ -->
+<div class="modal-overlay" id="endModal">
+  <div class="modal">
+    <span class="trophy-icon" style="font-size:72px">👑</span>
+    <h2>旅程完成！</h2>
+    <p style="color:rgba(255,255,255,.5);font-size:13px;margin:8px 0 16px">你已經完成咗呢段創業 0→1 嘅旅程</p>
+    <div class="achievement">
+      <span class="ach-icon" style="font-size:48px">🏆</span>
+      <div class="ach-title">創業者之路</div>
+      <div class="ach-desc">你已經由 0 去到了 1 🎉</div>
+    </div>
+    <button onclick="location.reload()" style="background:#e94560;color:#fff;border:none;border-radius:12px;padding:14px 30px;font-size:15px;font-weight:600;cursor:pointer;margin-top:14px">🔄 重新開始</button>
+  </div>
+</div>
+
+<script>
+const state = {
+  name: '',
+  currentCell: 0,       // 0 = before start, 1 = cell 1, etc.
+  cells: [],
+  completedCells: [],
+  tasks: [],
+  isAnimating: false
+};
+
+const TEMPLATES = [
+  { id:'create', icon:'🌱', title:'創立 Project', desc:'輸入 Project 名稱同描述，正式展開旅程' },
+  { id:'market', icon:'🔍', title:'市場研究', desc:'分析市場規模、競爭對手定位' },
+  { id:'validate', icon:'💡', title:'Idea Validation', desc:'做用戶訪談，驗證需求真偽' },
+  { id:'mvp', icon:'🛠️', title:'MVP 開發', desc:'打造最細可行產品快速測試' },
+  { id:'launch', icon:'🚀', title:'產品 Launch', desc:'正式推出市場，開始宣傳' },
+  { id:'traction', icon:'📈', title:'獲得 Traction', desc:'獲取第一批真實用戶' },
+  { id:'pmf', icon:'🏆', title:'Product-Market Fit', desc:'用戶離不開你嘅產品 → 0 去到了 1！' },
+];
+
+// ─── DOM refs ───
+const nameInput = document.getElementById('nameInput');
+const startBtn = document.getElementById('startBtn');
+const screenName = document.getElementById('screen-name');
+const screenGame = document.getElementById('screen-game');
+const charName = document.getElementById('charName');
+const charAvatar = document.getElementById('charAvatar');
+const charStatus = document.getElementById('charStatus');
+const charLevel = document.getElementById('charLevel');
+const pathContainer = document.getElementById('pathContainer');
+const milestoneModal = document.getElementById('milestoneModal');
+const modalDate = document.getElementById('modalDate');
+const achIcon = document.getElementById('achIcon');
+const achTitle = document.getElementById('achTitle');
+const achDesc = document.getElementById('achDesc');
+const btnTemplate = document.getElementById('btnTemplate');
+const btnCustom = document.getElementById('btnCustom');
+const closeModalBtn = document.getElementById('closeModalBtn');
+const customWrap = document.getElementById('customWrap');
+const templateWrap = document.getElementById('templateWrap');
+const customText = document.getElementById('customText');
+const customAdd = document.getElementById('customAdd');
+const customCancel = document.getElementById('customCancel');
+const endModal = document.getElementById('endModal');
+
+// ─── Name Input ───
+nameInput.addEventListener('input', () => {
+  startBtn.disabled = nameInput.value.trim().length < 1;
+});
+nameInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !startBtn.disabled) startGame();
+});
+startBtn.addEventListener('click', startGame);
+
+function startGame() {
+  state.name = nameInput.value.trim();
+  charName.textContent = state.name;
+  
+  // Set character emoji based on name length
+  const emojis = ['😎','🚀','💪','🔥','🌟','👑','🦸','🧙','🥷','🤖'];
+  charAvatar.textContent = emojis[state.name.length % emojis.length];
+  
+  screenName.classList.remove('active');
+  screenGame.classList.add('active');
+  
+  // Create only the first cell
+  state.cells = [TEMPLATES[0]]; // Only 'create' cell
+  renderCells();
+  
+  // Animate character to cell 1 after a beat
+  setTimeout(() => {
+    state.currentCell = 1;
+    updateCharacter();
+    renderCells();
+  }, 800);
+}
+
+// ─── Render Cells ───
+function renderCells() {
+  pathContainer.innerHTML = '';
+  
+  state.cells.forEach((cell, idx) => {
+    const cellNum = idx + 1;
+    const isCompleted = state.completedCells.includes(cellNum);
+    const isCurrent = cellNum === state.currentCell && !isCompleted;
+    const isLocked = cellNum > state.currentCell;
+    
+    // Don't show locked cells (only show up to current cell)
+    if (isLocked && !isCompleted) return;
+
+    const div = document.createElement('div');
+    div.className = 'floor' + (isCompleted ? ' completed' : '') + (isCurrent ? ' current' : '') + (isLocked ? ' locked' : '');
+    div.dataset.cell = cellNum;
+    
+    // Show tasks for completed cells
+    let taskHTML = '';
+    const cellTasks = state.tasks.filter(t => t.cell === cellNum);
+    if (cellTasks.length > 0) {
+      taskHTML = '<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">';
+      cellTasks.forEach(t => {
+        taskHTML += `<div style="font-size:11px;color:rgba(255,255,255,.5);padding:2px 0">• ${t.text}</div>`;
+      });
+      taskHTML += '</div>';
+    }
+    
+    div.innerHTML = `
+      <div class="floor-num">STEP ${cellNum}</div>
+      <div class="floor-icon">${cell.icon}</div>
+      <div class="floor-title">${cell.title}</div>
+      <div class="floor-sub">${cell.desc}</div>
+      ${taskHTML}
+    `;
+    
+    // Click to complete current cell
+    if (isCurrent && !state.isAnimating) {
+      div.style.cursor = 'pointer';
+      div.addEventListener('click', () => completeCurrentCell());
+    }
+    
+    pathContainer.appendChild(div);
+  });
+}
+
+function updateCharacter() {
+  const cell = state.cells[state.currentCell - 1];
+  if (!cell) return;
+  
+  charStatus.textContent = `📍 ${cell.title}`;
+  charLevel.textContent = `Lv.${state.currentCell}`;
+}
+
+// ─── Complete Current Cell ───
+function completeCurrentCell() {
+  if (state.isAnimating) return;
+  state.isAnimating = true;
+  
+  const cell = state.cells[state.currentCell - 1];
+  state.completedCells.push(state.currentCell);
+  
+  // Show modal
+  showMilestoneModal(cell);
+}
+
+function showMilestoneModal(cell) {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('zh-HK', { year:'numeric', month:'2-digit', day:'2-digit' });
+  const timeStr = now.toLocaleTimeString('zh-HK', { hour:'2-digit', minute:'2-digit' });
+  
+  achIcon.textContent = cell.icon;
+  achTitle.textContent = cell.title;
+  achDesc.textContent = `${state.name} · 完成時間 ${dateStr} ${timeStr}`;
+  modalDate.textContent = `🏅 獲得時間：${dateStr} ${timeStr}`;
+  
+  // Reset inner options
+  customWrap.classList.remove('active');
+  templateWrap.classList.remove('active');
+  customText.value = '';
+  btnTemplate.style.display = 'flex';
+  btnCustom.style.display = 'flex';
+  
+  milestoneModal.classList.add('active');
+  triggerConfetti();
+  
+  state.isAnimating = false;
+}
+
+// ─── Modal Buttons ───
+btnTemplate.addEventListener('click', () => {
+  btnTemplate.style.display = 'none';
+  btnCustom.style.display = 'none';
+  templateWrap.classList.add('active');
+});
+
+btnCustom.addEventListener('click', () => {
+  btnTemplate.style.display = 'none';
+  btnCustom.style.display = 'none';
+  customWrap.classList.add('active');
+  customText.focus();
+});
+
+closeModalBtn.addEventListener('click', closeModal);
+milestoneModal.addEventListener('click', e => {
+  if (e.target === milestoneModal) closeModal();
+});
+
+// Custom add
+customAdd.addEventListener('click', () => {
+  const text = customText.value.trim();
+  if (!text) return;
+  
+  state.tasks.push({
+    cell: state.currentCell,
+    text: text,
+    type: 'custom',
+    createdAt: new Date().toISOString()
+  });
+  
+  advanceToNextCell();
+});
+
+customCancel.addEventListener('click', () => {
+  customWrap.classList.remove('active');
+  btnTemplate.style.display = 'flex';
+  btnCustom.style.display = 'flex';
+});
+
+// Template selection
+document.querySelectorAll('.template-item').forEach(item => {
+  item.addEventListener('click', function() {
+    const stepId = this.dataset.step;
+    const template = TEMPLATES.find(t => t.id === stepId);
+    if (!template) return;
+    
+    state.tasks.push({
+      cell: state.currentCell,
+      text: template.title + '：' + template.desc,
+      type: 'template',
+      stepId: stepId,
+      createdAt: new Date().toISOString()
+    });
+    
+    advanceToNextCell();
+  });
+});
+
+function closeModal() {
+  milestoneModal.classList.remove('active');
+  customWrap.classList.remove('active');
+  templateWrap.classList.remove('active');
+  btnTemplate.style.display = 'flex';
+  btnCustom.style.display = 'flex';
+}
+
+function advanceToNextCell() {
+  closeModal();
+  
+  const nextCellNum = state.currentCell + 1;
+  
+  if (nextCellNum > TEMPLATES.length) {
+    // End game
+    setTimeout(() => {
+      endModal.classList.add('active');
+    }, 500);
+    return;
+  }
+  
+  // Add the next cell template
+  const nextTemplate = TEMPLATES[nextCellNum - 1];
+  if (nextTemplate) {
+    state.cells.push(nextTemplate);
+  }
+  
+  state.currentCell = nextCellNum;
+  updateCharacter();
+  renderCells();
+  
+  // Scroll to bottom
+  setTimeout(() => {
+    pathContainer.lastElementChild?.scrollIntoView({ behavior:'smooth', block:'center' });
+  }, 100);
+}
+
+// ─── Confetti ───
+function triggerConfetti() {
+  const container = document.createElement('div');
+  container.className = 'confetti-container';
+  document.body.appendChild(container);
+  
+  const colors = ['#e94560','#ffd93d','#2ecc71','#3498db','#9b59b6','#e67e22','#1abc9c'];
+  const shapes = ['■','●','▲','★','♦'];
+  
+  for (let i = 0; i < 50; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.color = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.fontSize = (Math.random() * 16 + 8) + 'px';
+    piece.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+    piece.style.animationDelay = (Math.random() * 0.8) + 's';
+    container.appendChild(piece);
+  }
+  
+  setTimeout(() => container.remove(), 4000);
+}
+
+// ─── Keyboard shortcut ───
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (customWrap.classList.contains('active')) {
+      customCancel.click();
+    } else if (templateWrap.classList.contains('active')) {
+      templateWrap.classList.remove('active');
+      btnTemplate.style.display = 'flex';
+      btnCustom.style.display = 'flex';
+    } else {
+      closeModal();
+      endModal.classList.remove('active');
+    }
+  }
+});
+</script>
+</body>
+</html>
