@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>菱形旅程</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #f5f0e8;
+    font-family: 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .game-board {
+    max-width: 420px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  /* Title */
+  .title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #95a5a6;
+    margin-bottom: 30px;
+  }
+
+  /* Path container */
+  .path {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    position: relative;
+    padding: 10px 0;
+  }
+
+  /* Each tile/floor */
+  .tile-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    margin: -8px 0;
+  }
+
+  /* Diamond tile */
+  .tile {
+    width: 180px;
+    height: 180px;
+    transform: rotate(45deg);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+    border: 3px solid;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  }
+
+  .tile-inner {
+    transform: rotate(-45deg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+  }
+
+  /* Tile states */
+  .tile.start {
+    background: linear-gradient(135deg, #fff5e6, #ffe0b2);
+    border-color: #f39c12;
+  }
+  .tile.start .tile-inner { color: #e67e22; }
+
+  .tile.locked {
+    background: #ecf0f1;
+    border-color: #bdc3c7;
+    opacity: 0.9;
+  }
+  .tile.locked .tile-inner { color: #95a5a6; }
+
+  .tile.completed {
+    background: linear-gradient(135deg, #eafaf1, #d5f5e3);
+    border-color: #2ecc71;
+  }
+  .tile.completed .tile-inner { color: #27ae60; }
+
+  .tile.current {
+    background: linear-gradient(135deg, #ebf5fb, #d6eaf8);
+    border-color: #3498db;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .tile.current .tile-inner { color: #2980b9; }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 4px 15px rgba(52,152,219,0.15); }
+    50% { box-shadow: 0 4px 25px rgba(52,152,219,0.35); }
+  }
+
+  /* Tile icon */
+  .tile-icon {
+    font-size: 36px;
+    margin-bottom: 4px;
+  }
+  .tile-number {
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0.6;
+  }
+  .tile-name {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  /* Character */
+  .character-area {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    z-index: 10;
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .char {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 3px 8px rgba(0,0,0,0.15));
+  }
+  .char-head {
+    width: 18px;
+    height: 18px;
+    background: #f1c40f;
+    border-radius: 50%;
+    border: 2px solid #e0b800;
+  }
+  .char-body {
+    width: 4px;
+    height: 14px;
+    background: #f1c40f;
+    border-radius: 2px;
+    margin-top: -2px;
+    position: relative;
+  }
+  .char-body::before, .char-body::after {
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: 10px;
+    background: #f1c40f;
+    border-radius: 2px;
+  }
+  .char-body::before { left: -8px; top: 2px; transform: rotate(-30deg); }
+  .char-body::after { right: -8px; top: 2px; transform: rotate(30deg); }
+  .char-legs {
+    display: flex;
+    gap: 6px;
+    margin-top: -1px;
+  }
+  .char-legs span {
+    width: 3px;
+    height: 10px;
+    background: #e67e22;
+    border-radius: 2px;
+  }
+  .char-legs span:first-child { transform: rotate(-10deg); }
+  .char-legs span:last-child { transform: rotate(10deg); }
+
+  .char-name {
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    font-weight: 700;
+    color: #2c3e50;
+    background: white;
+    padding: 2px 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    white-space: nowrap;
+  }
+
+  /* Arrow between tiles */
+  .arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 20px solid #bdc3c7;
+    margin: -2px 0;
+    z-index: 2;
+    transition: border-top-color 0.5s;
+  }
+  .arrow-down.active {
+    border-top-color: #2ecc71;
+  }
+  .arrow-down.current-arrow {
+    border-top-color: #3498db;
+    animation: bob 1.5s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  /* Achievement popup */
+  .achievement-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+  }
+  .achievement-overlay.show {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .achievement-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px 25px;
+    max-width: 320px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .achievement-card .trophy {
+    font-size: 56px;
+    margin-bottom: 10px;
+  }
+  .achievement-card .ach-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 4px;
+  }
+  .achievement-card .ach-desc {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 6px;
+  }
+  .achievement-card .ach-time {
+    font-size: 11px;
+    color: #bdc3c7;
+    margin-bottom: 18px;
+  }
+  .achievement-card .ach-btn {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 30px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .achievement-card .ach-btn:hover {
+    transform: scale(1.05);
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #ecf0f1;
+    border-radius: 3px;
+    margin: 20px 0 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2ecc71, #27ae60);
+    border-radius: 3px;
+    transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    color: #7f8c8d;
+    font-size: 12px;
+    margin-top: 15px;
+    padding: 0 10px;
+  }
+  .stats span strong { color: #2c3e50; }
+
+  /* Custom task input */
+  .task-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+  }
+  .task-modal.show { display: flex; }
+  .task-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    max-width: 340px;
+    width: 90%;
+    text-align: center;
+  }
+  .task-card h3 {
+    font-size: 18px;
+    color: #2c3e50;
+    margin-bottom: 15px;
+  }
+  .task-card input, .task-card textarea {
+    width: 100%;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .task-card input:focus, .task-card textarea:focus {
+    border-color: #3498db;
+  }
+  .task-card textarea {
+    height: 80px;
+    resize: vertical;
+  }
+  .task-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .task-actions button {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+  }
+  .btn-secondary {
+    background: #ecf0f1;
+    color: #7f8c8d;
+  }
+
+  /* ========== ZOOM WRAPPER ========== */
+  #zoomWrap {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+    touch-action: none;
+    cursor: grab;
+    background: #f5f0e8;
+  }
+  #zoomWrap.grabbing { cursor: grabbing; }
+  #zoomContent {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform-origin: center center;
+    will-change: transform;
+    transition: none;
+  }
+
+  /* Zoom controls */
+  .zoom-controls {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 50;
+    background: rgba(255,255,255,.9);
+    padding: 6px 12px;
+    border-radius: 30px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.12);
+    backdrop-filter: blur(6px);
+  }
+  .zoom-controls button {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    background: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .zoom-controls button:active { transform: scale(.92); }
+</style>
+</head>
+<body>
+
+<div id="zoomWrap">
+  <div id="zoomContent">
+    <div class="game-board" id="gameBoard">
+      <!-- ZOOM: game board unchanged -->
+      <div class="title">🗺️ 創業旅程</div>
+      <div class="subtitle">每一步解鎖一個里程碑</div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+
+      <div class="path" id="path"></div>
+
+      <div class="stats">
+        <span>🎯 已完成 <strong id="done">0</strong> / <strong id="total">0</strong></span>
+        <span id="statusText">🔒 點擊解鎖下一關</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="zoom-controls">
+    <button onclick="zoomOut()">−</button>
+    <button onclick="resetView()">⟲</button>
+    <button onclick="zoomIn()">+</button>
+  </div>
+</div>
+
+<!-- Achievement popup -->
+<div class="achievement-overlay" id="achPopup">
+  <div class="achievement-card">
+    <div class="trophy" id="achIcon">🏆</div>
+    <div class="ach-title" id="achTitle">成就解鎖！</div>
+    <div class="ach-desc" id="achDesc">你完成咗一個里程碑</div>
+    <div class="ach-time" id="achTime">2026-07-09 12:00</div>
+    <button class="ach-btn" onclick="closeAchievement()">🎉 繼續旅程</button>
+  </div>
+</div>
+
+<!-- Task input modal -->
+<div class="task-modal" id="taskModal">
+  <div class="task-card">
+    <h3 id="taskTitle">✏️ 填寫 Project 資料</h3>
+    <input type="text" id="taskInput" placeholder="你嘅 Project 名...">
+    <textarea id="taskDesc" placeholder="簡單描述..."></textarea>
+    <div class="task-actions">
+      <button class="btn-primary" onclick="submitTask()">✅ 確認</button>
+      <button class="btn-secondary" onclick="closeTask()">✖️ 跳過</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===== DATA (unchanged) =====
+  const tiles = [
+    { id: 1, icon: '💠', name: '創立 Project', desc: '輸入你嘅 project 名，正式出發', color: '#f39c12', task: true },
+    { id: 2, icon: '🔍', name: '市場研究', desc: '分析市場需求同競爭對手', color: '#e74c3c', task: true },
+    { id: 3, icon: '💡', name: 'Idea Validation', desc: '同真實用家傾談，驗證你嘅諗法', color: '#e67e22', task: false },
+    { id: 4, icon: '🛠️', name: 'MVP 開發', desc: '砌出最細可行產品', color: '#f1c40f', task: false },
+    { id: 5, icon: '🚀', name: 'Launch', desc: '正式推出俾用家用', color: '#2ecc71', task: false },
+    { id: 6, icon: '📈', name: 'Traction', desc: '獲取早期用戶同反饋', color: '#3498db', task: false },
+    { id: 7, icon: '🏆', name: '0→1 完成', desc: '達到 Product-Market Fit 🎉', color: '#9b59b6', task: false },
+  ];
+
+  let currentTile = 0;
+  let completed = [];
+  let userName = '';
+
+  // ===== RENDER (unchanged) =====
+  function render() {
+    const path = document.getElementById('path');
+    let html = '';
+
+    tiles.forEach((tile, i) => {
+      const isStart = i === 0;
+      const isCurrent = i === currentTile && currentTile > 0;
+      const isCompleted = completed.includes(i);
+      const isLocked = i > currentTile || (currentTile === 0 && i > 0);
+
+      let cls = 'tile ';
+      if (isStart && currentTile === 0) cls += 'start';
+      else if (isCurrent) cls += 'current';
+      else if (isCompleted) cls += 'completed';
+      else if (isLocked) cls += 'locked';
+
+      let arrowHtml = '';
+      if (i > 0) {
+        const prevCompleted = completed.includes(i-1) || (isCurrent && completed.includes(i-1));
+        const isCurrentArrow = i === currentTile + 1;
+        let arrowCls = 'arrow-down';
+        if (prevCompleted) arrowCls += ' active';
+        if (isCurrentArrow && currentTile > 0) arrowCls += ' current-arrow';
+        arrowHtml = `<div class="${arrowCls}"></div>`;
+      }
+
+      let innerContent = '';
+      if (isStart && currentTile === 0) {
+        innerContent = `
+          <div class="tile-inner">
+            <div class="tile-icon">${tile.icon}</div>
+            <div class="tile-number">Step ${tile.id}</div>
+            <div class="tile-name">${tile.name}</div>
+          </div>
+          <div class="character-area">
+            <div class="char">
+              <div class="char-name" id="charName">${userName || '你'}</div>
+              <div class="char-head"></div>
+              <div class="char-body"></div>
+              <div class="char-legs"><span></span><span></span></div>
+            </div>
+          </div>
+        `;
+      } else {
+        innerContent = `
+          <div class="tile-inner">
+            <div class="tile-icon">${tile.icon}</div>
+            <div class="tile-number">Step ${tile.id}</div>
+            <div class="tile-name">${tile.name}</div>
+            ${tile.desc ? `<div style="font-size:9px;opacity:0.7;margin-top:4px">${tile.desc}</div>` : ''}
+            ${isCompleted ? '<div style="font-size:16px;margin-top:4px">✅</div>' : ''}
+            ${isLocked ? '<div style="font-size:16px;margin-top:4px">🔒</div>' : ''}
+            ${isCurrent && !isCompleted ? '<div style="font-size:16px;margin-top:4px">📍</div>' : ''}
+          </div>
+        `;
+
+        if (isCurrent && !isCompleted) {
+          innerContent += `
+            <div class="character-area">
+              <div class="char">
+                <div class="char-name" id="charName">${userName || '你'}</div>
+                <div class="char-head"></div>
+                <div class="char-body"></div>
+                <div class="char-legs"><span></span><span></span></div>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      html += `
+        <div class="tile-wrap">
+          ${arrowHtml}
+          <div class="${cls}" data-index="${i}" onclick="${isLocked ? '' : isCompleted ? '' : isCurrent && !isCompleted ? `clickTile(${i})` : isStart && currentTile === 0 ? `startJourney(${i})` : ''}">
+            ${innerContent}
+          </div>
+        </div>
+      `;
+    });
+
+    path.innerHTML = html;
+    document.getElementById('done').textContent = completed.length;
+    document.getElementById('total').textContent = tiles.length;
+    const progress = (completed.length / tiles.length) * 100;
+    document.getElementById('progressFill').style.width = progress + '%';
+    const statusText = document.getElementById('statusText');
+    if (currentTile === 0) {
+      statusText.textContent = '💠 點擊菱形格開始旅程';
+    } else if (completed.length === tiles.length) {
+      statusText.textContent = '🎉 恭喜！你完成咗整趟旅程！';
+    } else {
+      const currentTileData = tiles[currentTile];
+      statusText.textContent = `🚶 正在: ${currentTileData.name} — 點擊完成任務`;
+    }
+  }
+
+  function startJourney(index) {
+    const name = prompt('✏️ 輸入你嘅名：', userName || '');
+    if (name === null) return;
+    userName = name || '創業者';
+    currentTile = 1;
+    render();
+  }
+
+  function clickTile(index) {
+    if (completed.includes(index)) return;
+    if (index !== currentTile) return;
+    const tile = tiles[index];
+    if (tile.task) {
+      document.getElementById('taskTitle').textContent = `✏️ ${tile.name}`;
+      document.getElementById('taskInput').value = '';
+      document.getElementById('taskDesc').value = '';
+      document.getElementById('taskInput').placeholder = tile.id === 1 ? '你嘅 Project 名...' : '輸入內容...';
+      document.getElementById('taskDesc').placeholder = '簡單描述...';
+      document.getElementById('taskModal').classList.add('show');
+      window._currentTaskIndex = index;
+    } else {
+      completeTile(index);
+    }
+  }
+
+  function submitTask() {
+    const index = window._currentTaskIndex;
+    const input = document.getElementById('taskInput').value.trim();
+    const desc = document.getElementById('taskDesc').value.trim();
+    if (index === 0 && !input) { alert('請輸入 Project 名 ✏️'); return; }
+    closeTask();
+    completeTile(index, input, desc);
+  }
+
+  function closeTask() { document.getElementById('taskModal').classList.remove('show'); }
+
+  function completeTile(index, input, desc) {
+    if (completed.includes(index)) return;
+    completed.push(index);
+    const tile = tiles[index];
+    const now = new Date();
+    const timeStr = now.toLocaleString('zh-Hant', { timeZone: 'Asia/Hong_Kong' });
+    const icons = ['🏆', '🥇', '🌟', '🎖️', '🏅', '💎', '👑'];
+    document.getElementById('achIcon').textContent = icons[index] || '🏆';
+    document.getElementById('achTitle').textContent = `「${tile.name}」完成！`;
+    document.getElementById('achDesc').textContent = input ? `「${input}」${desc ? ' — ' + desc : ''}` : tile.desc;
+    document.getElementById('achTime').textContent = `⏱️ ${timeStr}`;
+    document.getElementById('achPopup').classList.add('show');
+    if (currentTile < tiles.length - 1) { currentTile++; }
+    render();
+  }
+
+  function closeAchievement() {
+    document.getElementById('achPopup').classList.remove('show');
+    if (completed.length === tiles.length) {
+      setTimeout(() => { alert('🎉🎉🎉 恭喜你完成整趟創業旅程！由 0 去到 1 啦！🎉🎉🎉'); }, 300);
+    }
+  }
+
+  // ===== ZOOM (added on top, no design changes) =====
+  const zw = document.getElementById('zoomWrap');
+  const zc = document.getElementById('zoomContent');
+  let scale = 1, px = 0, py = 0, pan = false, sx = 0, sy = 0, ld = 0, ss = 1, spx = 0, spy = 0;
+
+  function apply() { zc.style.transform = `translate(${px}px, ${py}px) scale(${scale})`; }
+
+  function resetView() { scale = 1; px = 0; py = 0; apply(); }
+
+  function zoomIn() {
+    const ns = Math.min(scale * 1.4, 5);
+    px = window.innerWidth/2 - (window.innerWidth/2 - px) * (ns / scale);
+    py = window.innerHeight/2 - (window.innerHeight/2 - py) * (ns / scale);
+    scale = ns; apply();
+  }
+
+  function zoomOut() {
+    const ns = Math.max(scale / 1.4, 0.3);
+    px = window.innerWidth/2 - (window.innerWidth/2 - px) * (ns / scale);
+    py = window.innerHeight/2 - (window.innerHeight/2 - py) * (ns / scale);
+    scale = ns; apply();
+  }
+
+  // Mouse wheel zoom
+  zw.addEventListener('wheel', e => {
+    e.preventDefault();
+    const r = zw.getBoundingClientRect();
+    const mx = e.clientX - r.left, my = e.clientY - r.top;
+    const d = e.deltaY > 0 ? 0.9 : 1.1;
+    const ns = Math.max(0.3, Math.min(5, scale * d));
+    px = mx - (mx - px) * (ns / scale);
+    py = my - (my - py) * (ns / scale);
+    scale = ns; apply();
+  }, { passive: false });
+
+  // Touch pan + pinch
+  zw.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) { pan = true; sx = e.touches[0].clientX - px; sy = e.touches[0].clientY - py; }
+    else if (e.touches.length === 2) { pan = false; ld = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); ss = scale; spx = px; spy = py; }
+  }, { passive: false });
+
+  zw.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (e.touches.length === 1 && pan) { px = e.touches[0].clientX - sx; py = e.touches[0].clientY - sy; apply(); }
+    else if (e.touches.length === 2) {
+      const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      const ns = Math.max(0.3, Math.min(5, ss * (d / ld)));
+      scale = ns; px = spx; py = spy; apply();
+    }
+  }, { passive: false });
+
+  zw.addEventListener('touchend', () => { pan = false; }, { passive: false });
+
+  // Mouse pan
+  zw.addEventListener('mousedown', e => { pan = true; sx = e.clientX - px; sy = e.clientY - py; zw.classList.add('grabbing'); });
+  zw.addEventListener('mousemove', e => { if (!pan) return; px = e.clientX - sx; py = e.clientY - sy; apply(); });
+  zw.addEventListener('mouseup', () => { pan = false; zw.classList.remove('grabbing'); });
+  zw.addEventListener('mouseleave', () => { pan = false; zw.classList.remove('grabbing'); });
+
+  render();
+</script>
+</body>
+</html>
